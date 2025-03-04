@@ -40,5 +40,5 @@ jobs:
         uses: actions/upload-pages-artifact@v2
         with:
         # Upload entire repository
-        path: build
-        if-no-files-found: error
+          path: react_test_app/build
+          if-no-files-found: error
