@@ -1,95 +1,96 @@
 name: Build and Test React Application
 
-# Controls when the action will run. 
+# Déclencheur du workflow : il s'exécute à chaque push ou pull request sur la branche `main`
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  # Job principal : construction et tests de l'application
   build_test:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Utilisation d'un runner Ubuntu pour le job
 
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [20.x]  # Utilisation de Node.js version 20.x pour le job
 
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # 1. Checkout du dépôt pour récupérer le code source
       - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+
+      # 2. Installation de Node.js avec la version spécifiée dans la matrice
+      - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - name: npm ci and test
+      
+      # 3. Installation des dépendances en utilisant npm ci
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Exécution de la construction de l'application et des tests
+      - name: Run tests
         run: |
-          cd react_test_app
-          npm ci
-          npm run build --if-present
+          npm run build
           npm test
+
+      # 5. Téléchargement des rapports de couverture de tests sur Codecov
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./react_test_app/coverage/clover.xml
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v3
+
+      # 6. Upload du build de l'application pour GitHub Pages
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-        # Upload entire repository
           path: react_test_app/build
-          if-no-files-found: error
 
+  # Job pour générer la documentation JSDoc
   generate_jsdoc:
-    runs-on: ubuntu-latest
-    needs: build_test
+    runs-on: ubuntu-latest  # Utilisation d'un runner Ubuntu pour ce job
+    needs: build_test  # Ce job doit attendre la fin de `build_test` avant de commencer
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      # 1. Checkout du dépôt pour récupérer le code source
+      - uses: actions/checkout@v4
 
-      - name: Use Node.js 20.x
+      # 2. Installation de Node.js avec la version 20.x
+      - name: Set up Node.js 20.x
         uses: actions/setup-node@v2
         with:
           node-version: 20.x
 
+      # 3. Installation des dépendances
       - name: Install dependencies
         run: npm ci
 
+      # 4. Génération de la documentation JSDoc
       - name: Generate JSDoc
         run: npm run jsdoc
 
+      # 5. Upload de la documentation générée comme artefact
       - name: Upload JSDoc artifact
         uses: actions/upload-artifact@v4
         with:
           name: jsdoc
-          path: public/docs/
-          if-no-files-found: error
+          path: public/docs/*  # Assurez-vous que le chemin de la documentation est correct
+          if-no-files-found: error  # Échouer si aucun fichier n'est trouvé
 
-# Deploy job
+  # Job pour déployer l'application sur GitHub Pages
   deploy:
-    # Deploy to the github-pages environment
-    environment:
-      name: github-pages
-      url: ${{steps.deployment.outputs.page_url}}
-    runs-on: ubuntu-latest
-    # Grant GITHUB_TOKEN the permissions required to make a page deployment
-    permissions:
-      pages: write
-      id-token: write
-   # Add a dependency to the build job
-    needs: build_test
-    
-    # Specify runner + deployment step
+    runs-on: ubuntu-latest  # Utilisation d'un runner Ubuntu pour ce job
+    needs: build_test  # Ce job dépend de `build_test` pour être exécuté
     steps:
+      # 1. Checkout du dépôt pour récupérer le code source
+      - uses: actions/checkout@v4
+
+      # 2. Déploiement sur GitHub Pages avec le dossier `build`
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-   
+        with:
+          branch: gh-pages  # Déploiement sur la branche `gh-pages`
+          folder: build  # Le dossier `build` doit être utilisé pour le déploiement
