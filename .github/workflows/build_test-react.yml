@@ -67,7 +67,7 @@ jobs:
         run: npm run jsdoc
 
       - name: Upload JSDoc artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: jsdoc
           path: public/docs/
