@@ -28,17 +28,33 @@ jobs:
             npm run jsdoc
             npm run build --if-present
             npm test
-   # Vérification si JSDoc est bien généré
+   # Vérification si JSDoc a été généré
       - name: Vérifier si JSDoc a été généré
-        run: ls -R react_test_app/public/docs || echo "JSDoc non généré !"
+        run: |
+          if [ ! -d "react_test_app/public/docs" ]; then
+            echo "JSDoc non généré !"
+            exit 1
+          fi
 
       # Copier la documentation JSDoc dans le dossier build
       - name: Copier JSDoc dans le build
-        run: cp -r react_test_app/public/docs react_test_app/build/docs || echo "Pas de docs à copier"
+        run: |
+          if [ -d "react_test_app/public/docs" ]; then
+            cp -r react_test_app/public/docs react_test_app/build/docs
+          else
+            echo "Pas de docs à copier"
+            exit 1
+          fi
 
       # Vérifier le contenu du build avant l'upload
       - name: Vérifier les fichiers du build avant upload
-        run: ls -R react_test_app/build || echo "Le dossier build est vide !"
+        run: |
+          if [ ! "$(ls -A react_test_app/build)" ]; then
+            echo "Le dossier build est vide !"
+            exit 1
+          else
+            ls -R react_test_app/build
+          fi
 
       # Configuration de GitHub Pages
       - name: Setup Pages
@@ -65,5 +81,6 @@ jobs:
       - name: Deploy to Github Pages
         id: deployment
         uses: actions/deploy-pages@v2
+        
  
  
