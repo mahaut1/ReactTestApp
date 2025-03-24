@@ -37,7 +37,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: react_test_app/coverage/
+          directory: ./react_test_app/coverage/lcov-report/
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v3
