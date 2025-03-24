@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
-          path: ./test_react_app/build
+          path: ./react_tests_app/build
           if-no-files-found: error
   # Deploy job
   deploy:
