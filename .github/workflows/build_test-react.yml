@@ -50,7 +50,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: react_test_app/build
-          if-no-files-found: error
   # Deploy job
   deploy:
     # Deploy to the github-pages environment
@@ -65,6 +64,6 @@ jobs:
     steps:
       - name: Deploy to Github Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v2
  
  
