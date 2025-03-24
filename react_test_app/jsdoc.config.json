@@ -1,0 +1,20 @@
+{
+    "tags": {
+      "allowUnknownTags": true
+    },
+    "source": {
+      "include": ["src"],
+      "includePattern": "\\.js$",
+      "excludePattern": "(node_modules|build)"
+    },
+    "opts": {
+      "destination": "./public/docs",
+      "recurse": true,
+      "readme": "./README.md"
+    },
+    "templates": {
+      "cleverLinks": true,
+      "monospaceLinks": true
+    }
+  }
+  
