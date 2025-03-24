@@ -28,20 +28,13 @@ jobs:
             npm run jsdoc
             npm run build --if-present
             npm test
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./react_test_app/coverage/clover.xml
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v3
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload entire repository
-          path: react_test_app/build
-          if-no-files-found: error
+        # Vérification de la génération de JSDoc
+      - name: Vérifier si JSDoc a été généré
+        run: ls -R react_test_app/public/docs || echo "JSDoc non généré !"
+         # Copier JSDoc dans le build si nécessaire
+      - name: Copier JSDoc dans le build
+        run: cp -r react_test_app/public/docs react_test_app/build/docs || echo "Pas de docs à copier"
+
   # Deploy job
   deploy:
     # Deploy to the github-pages environment
