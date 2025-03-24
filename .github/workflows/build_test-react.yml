@@ -35,10 +35,9 @@ jobs:
           npm test
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
-        env:
-          token: ${{ secrets.CODECOV_TOKEN }}
         with:
-          directory: ./react_test_app/coverage/lcov-report/
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./react_test_app/coverage/clover?xml
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v3
