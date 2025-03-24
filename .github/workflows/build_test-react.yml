@@ -28,44 +28,20 @@ jobs:
             npm run jsdoc
             npm run build --if-present
             npm test
-   # Vérification si JSDoc a été généré
-      - name: Vérifier si JSDoc a été généré
-        run: |
-          if [ ! -d "react_test_app/public/docs" ]; then
-            echo "JSDoc non généré !"
-            exit 1
-          fi
-
-      # Copier la documentation JSDoc dans le dossier build
-      - name: Copier JSDoc dans le build
-        run: |
-          if [ -d "react_test_app/public/docs" ]; then
-            cp -r react_test_app/public/docs react_test_app/build/docs
-          else
-            echo "Pas de docs à copier"
-            exit 1
-          fi
-
-      # Vérifier le contenu du build avant l'upload
-      - name: Vérifier les fichiers du build avant upload
-        run: |
-          if [ ! "$(ls -A react_test_app/build)" ]; then
-            echo "Le dossier build est vide !"
-            exit 1
-          else
-            ls -R react_test_app/build
-          fi
-
-      # Configuration de GitHub Pages
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./react_test_app/coverage/clover.xml
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v3
-
-      # Upload des fichiers de build (incluant JSDoc) comme artefact
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          # Upload entire repository
           path: react_test_app/build
+          if-no-files-found: error
   # Deploy job
   deploy:
     # Deploy to the github-pages environment
@@ -80,7 +56,6 @@ jobs:
     steps:
       - name: Deploy to Github Pages
         id: deployment
-        uses: actions/deploy-pages@v2
-        
+        uses: actions/deploy-pages@v4
  
  
