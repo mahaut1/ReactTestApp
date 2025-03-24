@@ -2,7 +2,7 @@
   "name": "react_test_app",
   "version": "0.1.0",
   "private": true,
-  "homepage":"https://mahaut1.github.io/ReactTestApp/",
+  "homepage": "https://mahaut1.github.io/ReactTestApp/",
   "dependencies": {
     "cra-template": "1.2.0",
     "react": "^19.0.0",
@@ -15,8 +15,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --coverage --watchAll=false",
     "eject": "react-scripts eject",
-    "predeploy" : "npm run build",
-    "deploy" : "gh-pages -d build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "jsdoc": "jsdoc -R ./README.md -c ./jsdoc.config.json -r -d ./public/docs"
   },
   "eslintConfig": {
@@ -40,6 +40,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
-    "gh-pages": "^6.3.0"
+    "gh-pages": "^6.3.0",
+    "jsdoc": "^4.0.4"
   }
 }
