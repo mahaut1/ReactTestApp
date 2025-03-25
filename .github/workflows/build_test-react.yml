@@ -54,7 +54,7 @@ jobs:
           fi
      
            
-      - name: build and publish package on NPM 📦
+      - name: build and publish package on NPM 
         if: env.NEW_VERSION == 'true'
         run: |
             cd react_test_app
