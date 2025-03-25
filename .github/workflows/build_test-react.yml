@@ -42,6 +42,27 @@ jobs:
           # Upload entire repository
           path: react_test_app/build
           if-no-files-found: error
+      - name: check version
+        run: |
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
+          NPM_VERSION=$(npm view @mahautw/react_test_app version)
+          if [ "$LOCAL_VERSION" != "$NPM_VERSION" ]; 
+            echo "NEW_VERSION=true" >> $GITHUB_ENV
+          else
+            echo "NEW_VERSION=false" >> $GITHUB_ENV
+          fi
+     
+           
+      - name: build and publish package on NPM 📦
+         if env.NEW_VERSION == 'true'
+        run: |
+          git config --global user.email "mwindal@hotmail.com"
+          git config --global user.name "Mahaut Windal"
+          npm run build-npm
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
   # Deploy job
   deploy:
     # Deploy to the github-pages environment
