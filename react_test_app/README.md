@@ -61,7 +61,7 @@ La couverture des tests est de 100 % (hors `index.js` et `reportWebVitals.js`).
 
 ## Documentation
 La documentation JSDoc est générée automatiquement et disponible à l'adresse suivante :  
-[https://ton-user.github.io/ton-repo/docs](https://ton-user.github.io/ton-repo/docs)
+[https://github.com/mahaut1/ReactTestApp/docs](https://github.com/mahaut1/ReactTestApp/docs)
 
 Pour générer la documentation localement :
 
