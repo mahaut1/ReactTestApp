@@ -60,7 +60,7 @@ jobs:
             git config --global user.name "Mahaut Windal"
             npm run build-npm
             npm publish
-          env:
+        env:
             NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         
 
