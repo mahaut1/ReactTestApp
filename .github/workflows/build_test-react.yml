@@ -57,6 +57,7 @@ jobs:
       - name: build and publish package on NPM 📦
         if: env.NEW_VERSION == 'true'
         run: |
+            cd react_test_app
             git config --global user.email "mwindal@hotmail.com"
             git config --global user.name "Mahaut Windal"
             npm run build-npm
