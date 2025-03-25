@@ -45,7 +45,7 @@ jobs:
       - name: check version
         run: |
           LOCAL_VERSION=$(node -p "require('./react_test_app/package.json').version")
-          NPM_VERSION=$(npm view @mahautw/react_test_app version || echo "0.0.0")
+          NPM_VERSION=$(npm show @mahautw/react_test_app version)
           if [ "$LOCAL_VERSION" != "$NPM_VERSION" ]; then
             echo "NEW_VERSION=true" >> $GITHUB_ENV 
           else
