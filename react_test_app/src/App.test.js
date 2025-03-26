@@ -20,3 +20,14 @@ test('displays error for invalid name', async () => {
   fireEvent.click(screen.getByText("S'enregistrer"));
   await screen.findByText('Nom ou prénom invalide');
 });
+
+test('submits the form successfully with valid data', async () => {
+  render(<RegistrationForm />);
+  
+  fireEvent.change(screen.getByPlaceholderText('Prénom'), { target: { value: 'Jean' } });
+  fireEvent.change(screen.getByPlaceholderText('Nom'), { target: { value: 'Dupont' } });
+  fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'jean.dupont@example.com' } });
+  fireEvent.click(screen.getByText("S'enregistrer"));
+
+  await waitFor(() => expect(screen.queryByText(/Erreur/i)).not.toBeInTheDocument());
+});

@@ -54,9 +54,9 @@ const RegistrationForm = () => {
             <input name="firstName" placeholder="Prénom" value={formData.firstName} onChange={handleChange} />
             <input name="lastName" placeholder="Nom" value={formData.lastName} onChange={handleChange} />
             <input name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
-            <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} />
+            <input type="date" placeholder="Date de naissance" name="birthDate" value={formData.birthDate} onChange={handleChange} />
             <input name="city" placeholder="Ville" value={formData.city} onChange={handleChange} />
-            <input name="postalCode" placeholder="Code Postal" value={formData.postalCode} onChange={handleChange} />
+            <input name="postalCode" placeholder="Code postal" value={formData.postalCode} onChange={handleChange} />
             <button type="submit">S'enregistrer</button>
             {error && <p style={{ color: 'red' }}>{error}</p>}
         </form>
