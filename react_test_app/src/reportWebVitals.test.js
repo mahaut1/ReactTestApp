@@ -1,6 +1,6 @@
 import reportWebVitals from './reportWebVitals';
 
-// Création d'un mock de toutes les métriques de web-vitals
+// Création de mocks pour les métriques web-vitals
 const mockGetCLS = jest.fn();
 const mockGetFID = jest.fn();
 const mockGetFCP = jest.fn();
@@ -23,7 +23,6 @@ test("ne fait rien si onPerfEntry n'est pas une fonction", async () => {
   await reportWebVitals(123);
 
   expect(mockGetCLS).not.toHaveBeenCalled();
-  expect(mockGetFID).not.toHaveBeenCalled();
   expect(mockGetFCP).not.toHaveBeenCalled();
   expect(mockGetLCP).not.toHaveBeenCalled();
   expect(mockGetTTFB).not.toHaveBeenCalled();

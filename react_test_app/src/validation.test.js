@@ -51,3 +51,7 @@ test("rejects invalid emails", () => {
     expect(validateEmail("")).toBe(false);
   });
   
+  test('validateAge returns false for users just under 18', () => {
+    expect(validateAge('2020-04-01')).toBe(false); // Devrait retourner false car l'utilisateur n'a pas encore 18 ans
+});
+

@@ -26,15 +26,20 @@ export function validateEmail(email) {
 export function validateAge(dateOfBirth) {
     const now = new Date();
     const birthDate = new Date(dateOfBirth);
-    const age = now.getFullYear() - birthDate.getFullYear();
+    let age = now.getFullYear() - birthDate.getFullYear();
     const monthDiff = now.getMonth() - birthDate.getMonth();
     const dayDiff = now.getDate() - birthDate.getDate();
 
+    // Si l'utilisateur n'a pas encore eu son anniversaire cette année, on réduit l'âge de 1
     if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-        return age - 1 >= 18;
+        age -= 1;
     }
+
+    // On retourne false si l'utilisateur a moins de 18 ans
     return age >= 18;
 }
+
+
 
 /**
  * Valide un code postal français (5 chiffres).
