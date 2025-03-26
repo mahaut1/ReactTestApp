@@ -43,3 +43,11 @@ describe('Validation Functions', () => {
         expect(validatePostalCode('750012')).toBe(false); // Trop long
     });
 });
+
+test("rejects invalid emails", () => {
+    expect(validateEmail("jean.dupont@invalid")).toBe(false);
+    expect(validateEmail("jean.dupont@.com")).toBe(false);
+    expect(validateEmail("jean.dupontexample.com")).toBe(false);
+    expect(validateEmail("")).toBe(false);
+  });
+  
