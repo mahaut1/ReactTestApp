@@ -2,18 +2,36 @@
 version: '3.1'
 
 services:
-
   db:
-    image: mysql-2
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: mysql:9.2
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ./SQLFiles:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: mysqladmin ping -h localhost
 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8080:8080
+  
+  serveur:
+    environment: 
+      - MYSQL_DATABASE= ynov_ci
+      - MYSQL_HOST= db
+      - MYSQL_USER= root
+      - MYSQL_PASSWORD=${MYSQL_ROOT_PASSWORD} 
+    ports: [8000:8000]
+    restart: always
+    depends_on:
+       db:
+          condition: service_healthy
+    image: python:3.11
+    build:
+      context: ./src/serveur
+      dockerfile: Dockerfile
+   # command:  uvicorn serveur:app --proxy-headers --host 0.0.0 --port 8000 
+   # copy:  ./ /serveur
