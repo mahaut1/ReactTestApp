@@ -8,9 +8,10 @@ WORKDIR /serveur
 COPY ./ /serveur
 
 # Installer les dépendances
-RUN pip install  mysql-connector-python fastapi uvicorn 
+RUN pip install mysql-connector-python fastapi uvicorn passlib[bcrypt]
+
 # Exposer le port utilisé par l'application FastAPI
 EXPOSE 8000
 
 # Commande pour démarrer l'application
-CMD uvicorn serveur:app --proxy-headers --host 0.0.0 --port 8000 
+CMD uvicorn serveur:app --proxy-headers --host 0.0.0.0 --port 8000
