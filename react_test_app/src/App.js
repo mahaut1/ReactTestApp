@@ -22,7 +22,7 @@ function App() {
       }
     }
     countUsers();
-  }, []);
+  }, [url]);
   return (
     <div className="App">
       <header className="App-header">
