@@ -1,63 +1,77 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import RegistrationForm from './RegistrationForm';
+// src/RegistrationForm.test.js
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import RegistrationForm from './RegistrationForm'
 
-test('renders the registration form', () => {
-    render(<RegistrationForm />);
-    expect(screen.getByPlaceholderText('Prénom')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Nom')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
-    expect(screen.getByLabelText('Date de naissance')).toBeInTheDocument();  // Champ date
-    expect(screen.getByPlaceholderText('Code Postal')).toBeInTheDocument();
-});
+describe('RegistrationForm', () => {
+  it('affiche tous les champs', () => {
+    render(<RegistrationForm />)
+    expect(screen.getByPlaceholderText('Prénom')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Nom')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Email')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Mot de passe')).toBeInTheDocument()
+    expect(screen.getByLabelText('Date de naissance')).toBeInTheDocument()
+  })
 
+  it('erreur si champs vides', async () => {
+    render(<RegistrationForm />)
+    fireEvent.click(screen.getByText("S'enregistrer"))
+    await waitFor(() =>
+      expect(screen.getByTestId('error-message')).toHaveTextContent(/Veuillez remplir tous les champs/i)
+    )
+  })
 
-  
-test('displays error for invalid name', async () => {
-    render(<RegistrationForm />);
-    fireEvent.change(screen.getByPlaceholderText('Prénom'), { target: { value: 'Jean123' } });
-    fireEvent.change(screen.getByPlaceholderText('Nom'), { target: { value: 'Dupont!' } });
-    fireEvent.click(screen.getByText("S'enregistrer"));
-    await screen.findByText('Nom ou prénom invalide');
-});
+  it('erreur nom/prénom invalide', async () => {
+    render(<RegistrationForm />)
+    fireEvent.change(screen.getByPlaceholderText('Prénom'), { target: { value: 'Jean123' } })
+    fireEvent.change(screen.getByPlaceholderText('Nom'), { target: { value: 'Dupont!' } })
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'jean@test.com' } })
+    fireEvent.change(screen.getByPlaceholderText('Mot de passe'), { target: { value: 'pwd' } })
+    fireEvent.change(screen.getByLabelText('Date de naissance'), { target: { value: '1990-01-01' } })
+    fireEvent.click(screen.getByText("S'enregistrer"))
 
-test('submits the form successfully with valid data', async () => {
-    render(<RegistrationForm />);
-    
-    fireEvent.change(screen.getByPlaceholderText('Prénom'), { target: { value: 'Jean' } });
-    fireEvent.change(screen.getByPlaceholderText('Nom'), { target: { value: 'Dupont' } });
-    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'jean.dupont@example.com' } });
-    fireEvent.change(screen.getByLabelText('Date de naissance'), { target: { value: '2000-01-01' } }); // Ajout du champ date
-    fireEvent.change(screen.getByPlaceholderText('Code Postal'), { target: { value: '75001' } });
-    fireEvent.click(screen.getByText("S'enregistrer"));
+    await waitFor(() =>
+      expect(screen.getByTestId('error-message')).toHaveTextContent(/Nom ou prénom invalide/i)
+    )
+  })
 
-    await waitFor(() => expect(screen.queryByText(/Erreur/i)).not.toBeInTheDocument());
-});
+  it('erreur email invalide', async () => {
+    render(<RegistrationForm />)
+    fireEvent.change(screen.getByPlaceholderText('Prénom'), { target: { value: 'Jean' } })
+    fireEvent.change(screen.getByPlaceholderText('Nom'), { target: { value: 'Dupont' } })
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'invalidEmail' } })
+    fireEvent.change(screen.getByPlaceholderText('Mot de passe'), { target: { value: 'pwd' } })
+    fireEvent.change(screen.getByLabelText('Date de naissance'), { target: { value: '1990-01-01' } })
+    fireEvent.click(screen.getByText("S'enregistrer"))
 
-test("affiche une erreur si le code postal est invalide", async () => {
-    render(<RegistrationForm />);
-  
-    fireEvent.change(screen.getByPlaceholderText('Prénom'), { target: { value: 'Jean' } });
-    fireEvent.change(screen.getByPlaceholderText('Nom'), { target: { value: 'Dupont' } });
-    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'jean.dupont@example.com' } });
-    fireEvent.change(screen.getByLabelText('Date de naissance'), { target: { value: '2000-01-01' } });
-    fireEvent.change(screen.getByPlaceholderText('Code Postal'), { target: { value: 'abcde' } });
-    
-    fireEvent.click(screen.getByText("S'enregistrer"));
-  
-    await screen.findByText('Code postal invalide');
-  });
+    await waitFor(() =>
+      expect(screen.getByTestId('error-message')).toHaveTextContent(/Email invalide/i)
+    )
+  })
 
-  test("affiche une erreur si l'email est invalide", async () => {
-    render(<RegistrationForm />);
-  
-    fireEvent.change(screen.getByPlaceholderText('Prénom'), { target: { value: 'Jean' } });
-    fireEvent.change(screen.getByPlaceholderText('Nom'), { target: { value: 'Dupont' } });
-    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'jean.dupont@invalid' } }); // Email invalide
-    fireEvent.change(screen.getByLabelText('Date de naissance'), { target: { value: '2000-01-01' } });
-    fireEvent.change(screen.getByPlaceholderText('Code Postal'), { target: { value: '75001' } });
-  
-    fireEvent.click(screen.getByText("S'enregistrer"));
-  
-    await screen.findByText('Email invalide');
-  });
-  
+  it('erreur utilisateur mineur', async () => {
+    render(<RegistrationForm />)
+    fireEvent.change(screen.getByPlaceholderText('Prénom'), { target: { value: 'Jean' } })
+    fireEvent.change(screen.getByPlaceholderText('Nom'), { target: { value: 'Dupont' } })
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'jean@ex.com' } })
+    fireEvent.change(screen.getByPlaceholderText('Mot de passe'), { target: { value: 'pwd' } })
+    fireEvent.change(screen.getByLabelText('Date de naissance'), { target: { value: '2020-01-01' } })
+    fireEvent.click(screen.getByText("S'enregistrer"))
+
+    await waitFor(() =>
+      expect(screen.getByTestId('error-message')).toHaveTextContent(/Vous devez avoir au moins 18 ans/i)
+    )
+  })
+
+  it('soumission réussie affiche succès', async () => {
+    render(<RegistrationForm />)
+    fireEvent.change(screen.getByPlaceholderText('Prénom'), { target: { value: 'Jean' } })
+    fireEvent.change(screen.getByPlaceholderText('Nom'), { target: { value: 'Dupont' } })
+    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'jean@ex.com' } })
+    fireEvent.change(screen.getByPlaceholderText('Mot de passe'), { target: { value: 'pwd' } })
+    fireEvent.change(screen.getByLabelText('Date de naissance'), { target: { value: '1990-01-01' } })
+    fireEvent.click(screen.getByText("S'enregistrer"))
+
+    await waitFor(() => expect(screen.queryByTestId('error-message')).not.toBeInTheDocument())
+    await waitFor(() => expect(screen.getByTestId('success-message')).toBeInTheDocument())
+  })
+})
