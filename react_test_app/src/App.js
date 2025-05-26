@@ -1,13 +1,13 @@
 import React from "react";
 import RegistrationForm from "./RegistrationForm";
-import UsersList from "./UsersList";
+import UserList from "./UserList";
 
 function App() {
   return (
     <div>
       <h1>Gestion des utilisateurs</h1>
       <RegistrationForm />
-      <UsersList />
+      <UserList />
     </div>
   );
 }
