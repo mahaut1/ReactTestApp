@@ -89,6 +89,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Create .env file from GitHub Secrets
+        run: |
+          mkdir -p react_test_app
+          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> react_test_app/.env
+          echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> react_test_app/.env
+          echo "REACT_APP_API_URL=http://localhost:8000" >> react_test_app/.env
 
       - name: Start Docker Compose stack
         run: |
