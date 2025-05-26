@@ -7,6 +7,7 @@ function App() {
     <div>
       <h1>Formulaire d'enregistrement</h1>
       <RegistrationForm />
+      <h1>Liste des utilisateurs</h1>
       <UserList />
     </div>
   );
