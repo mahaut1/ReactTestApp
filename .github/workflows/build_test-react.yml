@@ -12,7 +12,6 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x]
-
     steps:
       - uses: actions/checkout@v4
 
@@ -91,20 +90,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Load .env variables
-        run: |
-          set -o allexport
-          source react_test_app/.env
-          set +o allexport
-
       - name: Start Docker Compose stack
         run: |
-            cd react_test_app
-            docker compose up -d --build
-            docker compose ps
-            docker compose logs db
-            sleep 30
-        
+          cd react_test_app
+          docker compose up -d --build
+          docker compose ps
+          docker compose logs db
+          sleep 30
 
       - name: Run Cypress tests
         run: |
