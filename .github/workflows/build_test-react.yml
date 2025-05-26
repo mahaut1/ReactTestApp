@@ -88,14 +88,15 @@ jobs:
     needs: build_test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Start Docker Compose stack
-        run: |
+    - name: Checkout code
+      uses: actions/checkout@v4    
+    - name: Load .env variables
+      run: |
+        set -o allexport
+        source react_test_app/.env
+        set +o allexport
+    - name: Start Docker Compose stack
+      run: |
           cd react_test_app
           docker compose up -d --build
           - name: Wait for services to be ready
@@ -103,25 +104,25 @@ jobs:
             npx wait-on http://localhost:3000
             npx wait-on http://localhost:8000
 
-      - name: Install Node and Cypress dependencies
-        uses: actions/setup-node@v3
-        with:
+    - name: Install Node and Cypress dependencies
+      uses: actions/setup-node@v3
+      with:
           node-version: '18.x'
 
-      - name: Install dependencies and wait for services
-        run: |
+    - name: Install dependencies and wait for services
+      run: |
           cd react_test_app
           npm ci
           npx wait-on http://localhost:3000
           npx wait-on http://localhost:8000
 
-      - name: Run Cypress tests
-        run: |
+    - name: Run Cypress tests
+      run: |
           cd react_test_app
           npx cypress run
 
-      - name: Shutdown Docker Compose
-        if: always()
-        run: |
+    - name: Shutdown Docker Compose
+      if: always()
+      run: |
           cd react_test_app
           docker compose down
