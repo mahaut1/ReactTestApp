@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { validateName, validateEmail, validateAge, validatePostalCode } from './validation';
-import './registrationForm.css';
+import {
+  validateName,
+  validateEmail,
+  validateAge,
+  validatePostalCode,
+} from './validation';
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -12,77 +16,50 @@ const RegistrationForm = () => {
     city: '',
     postalCode: '',
   });
+
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const apiUrl = process.env.REACT_APP_API_URL;
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
 
     const { first_name, last_name, email, password, birthDate, city, postalCode } = formData;
-    // Empty fields check
+
     if (!first_name || !last_name || !email || !password || !birthDate || !city || !postalCode) {
       setError('Veuillez remplir tous les champs');
       return;
     }
-    // Name validation
+
     if (!validateName(first_name) || !validateName(last_name)) {
       setError('Nom ou prénom invalide');
       return;
     }
-    // Email validation
+
     if (!validateEmail(email)) {
       setError('Email invalide');
       return;
     }
-    // Age validation
+
     if (!validateAge(birthDate)) {
       setError('Vous devez avoir au moins 18 ans');
       return;
     }
-    // Postal code validation
+
     if (!validatePostalCode(postalCode)) {
       setError('Code postal invalide');
       return;
     }
 
-    try {
-      const response = await fetch(`${apiUrl}/users/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          first_name,
-          last_name,
-          email,
-          password,
-          birth_date: birthDate,
-          city,
-          postal_code: postalCode
-        }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        setError(data.detail || "Erreur lors de l'enregistrement");
-        return;
-      }
-      setSuccess('Enregistrement réussi !');
-      setFormData({
-        first_name: '', last_name: '', email: '', password: '', birthDate: '', city: '', postalCode: ''
-      });
-    } catch {
-      setError('Erreur de connexion au serveur');
-    }
+    setError('');
+    console.log('Formulaire soumis avec succès', formData);
+    // Ici, vous pouvez effectuer une requête API ou autre action
   };
 
   return (
-    <form onSubmit={handleSubmit} className="registration-form">
+    <form className="registration-form" onSubmit={handleSubmit}>
       <input
         name="first_name"
         placeholder="Prénom"
@@ -97,15 +74,15 @@ const RegistrationForm = () => {
       />
       <input
         name="email"
-        type="email"
         placeholder="Email"
+        type="email"
         value={formData.email}
         onChange={handleChange}
       />
       <input
         name="password"
-        type="password"
         placeholder="Mot de passe"
+        type="password"
         value={formData.password}
         onChange={handleChange}
       />
@@ -130,8 +107,11 @@ const RegistrationForm = () => {
         onChange={handleChange}
       />
       <button type="submit">S'enregistrer</button>
-      {error && <p style={{ color: 'red' }} data-testid="error-message">{error}</p>}
-      {success && <p style={{ color: 'green' }} data-testid="success-message">{success}</p>}
+      {error && (
+        <p data-testid="error-message" style={{ color: 'red' }}>
+          {error}
+        </p>
+      )}
     </form>
   );
 };
