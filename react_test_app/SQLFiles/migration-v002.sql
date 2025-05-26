@@ -13,3 +13,10 @@ INSERT INTO ynov_ci.users (name, email, password) VALUES
 ('Chloé Bernard', 'chloe@example.com', 'motdepasse3'),
 ('David Lefèvre', 'david@example.com', 'motdepasse4'),
 ('Emma Moreau', 'emma@example.com', 'motdepasse5');
+(
+    'Admin',
+    'loise.fenoll@ynov.com',
+    '$2b$12$QhYyp6nRCiGwqZAYG3lfWeJPZemIik0Mj1fvK9zqp7QWdeUWxKX5u'
+);
+
+
