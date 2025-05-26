@@ -98,7 +98,10 @@ jobs:
         run: |
           cd react_test_app
           docker compose up -d --build
-          sleep 30
+          - name: Wait for services to be ready
+          run: |
+            npx wait-on http://localhost:3000
+            npx wait-on http://localhost:8000
 
       - name: Install Node and Cypress dependencies
         uses: actions/setup-node@v3
