@@ -99,9 +99,12 @@ jobs:
 
       - name: Start Docker Compose stack
         run: |
-          cd react_test_app
-          docker compose up -d --build
-          sleep 30
+            cd react_test_app
+            docker compose up -d --build
+            docker compose ps
+            docker compose logs db
+            sleep 30
+        
 
       - name: Run Cypress tests
         run: |

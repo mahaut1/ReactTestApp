@@ -3,14 +3,18 @@ version: '3.1'
 
 services:
   db:
-    image: mysql:9.2
+    image: mysql:8.0
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
       - ./SQLFiles:/docker-entrypoint-initdb.d
     healthcheck:
-      test: mysqladmin ping -h localhost
+  test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}"]
+  interval: 10s
+  timeout: 5s
+  retries: 5
+
 
   adminer:
     image: adminer
