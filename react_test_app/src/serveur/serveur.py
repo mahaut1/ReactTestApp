@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from passlib.context import CryptContext
 
-app= FastAPI()
+app = FastAPI()
 origins = ["*"]
 
 app.add_middleware(
@@ -16,8 +16,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Connect to the database
-conn= mysql.connector.connect(
+# Connexion à la base de données
+conn = mysql.connector.connect(
     database=os.getenv("MYSQL_DATABASE"),
     user=os.getenv("MYSQL_USER"),
     password=os.getenv("MYSQL_PASSWORD"),
@@ -25,7 +25,7 @@ conn= mysql.connector.connect(
     host=os.getenv("MYSQL_HOST")
 )
 
-# Configuration du hash
+# Hashage des mots de passe
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password: str) -> str:
@@ -43,35 +43,41 @@ class UserLogin(BaseModel):
     email: str
     password: str
 
+# Fonction utilitaire pour transformer tuple SQL en dict
+def user_to_dict(row):
+    return {
+        "id": row[0],
+        "name": row[1],
+        "email": row[2],
+        "created_at": row[4].isoformat() if row[4] else None
+    }
 
-# Endpoint pour récupérer tous les utilisateurs
 @app.get("/users")
 async def get_users():
-    cursor=conn.cursor()
-    sql_select_Query="SELECT * FROM users"
-    cursor.execute(sql_select_Query)
-    #get all records
-    records=cursor.fetchall()
-    print("Total number of rows in table: ", cursor.rowcount)
-    #renvoyer nos données et 200 OK
-    return {"utilisateurs": records}
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users")
+    records = cursor.fetchall()
+    cursor.close()
+    users = [user_to_dict(row) for row in records]
+    return {"utilisateurs": users}
 
-# Endpoint pour enregistrer un nouvel utilisateur
 @app.post("/users/register")
 async def register_user(user: User):
     cursor = conn.cursor()
     cursor.execute("SELECT id FROM users WHERE email = %s", (user.email,))
     if cursor.fetchone() is not None:
+        cursor.close()
         raise HTTPException(status_code=400, detail="Email déjà utilisé")
+
+    hashed_pwd = hash_password(user.password)
     cursor.execute(
         "INSERT INTO users (name, email, password) VALUES (%s, %s, %s)",
-        (user.name, user.email, user.password)
+        (user.name, user.email, hashed_pwd)
     )
     conn.commit()
     cursor.close()
     return {"message": "Utilisateur enregistré avec succès"}
 
-# Endpoint pour la connexion utilisateur
 @app.post("/users/login")
 async def login_user(user: UserLogin):
     cursor = conn.cursor()
@@ -84,7 +90,6 @@ async def login_user(user: UserLogin):
 
     user_id, hashed_password = result
 
-    # Vérification du mot de passe
     if not verify_password(user.password, hashed_password):
         raise HTTPException(status_code=400, detail="Mot de passe incorrect")
 

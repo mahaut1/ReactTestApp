@@ -1,150 +1,83 @@
-import React, { useState } from 'react';
-import { validateName, validateEmail, validateAge, validatePostalCode } from './validation';
-import './registrationForm.css';
+import React, { useState } from "react";
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    birthDate: '',
-    city: '',
-    postalCode: '',
+    name: "",
+    email: "",
+    password: "",
   });
 
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  const apiUrl = process.env.REACT_APP_API_URL;
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError("");
+    setSuccess("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
-    // Validations
-    if (!validateName(formData.firstName) || !validateName(formData.lastName)) {
-      setError('Nom ou prénom invalide');
-      return;
-    }
-    if (!validateEmail(formData.email)) {
-      setError('Email invalide');
-      return;
-    }
-    if (!validateAge(formData.birthDate)) {
-      setError('Vous devez avoir au moins 18 ans');
-      return;
-    }
-    if (!validatePostalCode(formData.postalCode)) {
-      setError('Code postal invalide');
+    // Simple validation (à compléter selon besoin)
+    if (!formData.name || !formData.email || !formData.password) {
+      setError("Tous les champs sont obligatoires");
       return;
     }
 
-    // Envoi vers l'API
     try {
-      const response = await fetch(`${apiUrl}/users`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const res = await fetch("http://localhost:8000/users/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.detail || "Erreur lors de l'enregistrement");
-        return;
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.detail || "Erreur lors de l'enregistrement");
+      } else {
+        setSuccess("Enregistrement réussi !");
+        setFormData({ name: "", email: "", password: "" });
       }
-
-      setSuccess('Enregistrement réussi !');
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        birthDate: '',
-        city: '',
-        postalCode: '',
-      });
     } catch (err) {
-      console.error(err);
-      setError("Erreur de connexion au serveur");
+      setError("Erreur réseau");
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <label htmlFor="firstName">Prénom</label>
+      <label>Nom complet</label>
       <input
-        id="firstName"
-        name="firstName"
-        placeholder="Prénom"
-        value={formData.firstName}
+        name="name"
+        value={formData.name}
         onChange={handleChange}
+        placeholder="Nom complet"
       />
 
-      <label htmlFor="lastName">Nom</label>
+      <label>Email</label>
       <input
-        id="lastName"
-        name="lastName"
-        placeholder="Nom"
-        value={formData.lastName}
-        onChange={handleChange}
-      />
-
-      <label htmlFor="email">Email</label>
-      <input
-        id="email"
         name="email"
-        placeholder="Email"
+        type="email"
         value={formData.email}
         onChange={handleChange}
+        placeholder="Email"
       />
 
-      <label htmlFor="birthDate">Date de naissance</label>
+      <label>Mot de passe</label>
       <input
-        id="birthDate"
-        type="date"
-        name="birthDate"
-        placeholder="Date de naissance"
-        value={formData.birthDate}
+        name="password"
+        type="password"
+        value={formData.password}
         onChange={handleChange}
-      />
-
-      <label htmlFor="city">Ville</label>
-      <input
-        id="city"
-        name="city"
-        placeholder="Ville"
-        value={formData.city}
-        onChange={handleChange}
-      />
-
-      <label htmlFor="postalCode">Code Postal</label>
-      <input
-        id="postalCode"
-        name="postalCode"
-        placeholder="Code Postal"
-        value={formData.postalCode}
-        onChange={handleChange}
+        placeholder="Mot de passe"
       />
 
       <button type="submit">S'enregistrer</button>
 
-      {error && (
-        <p style={{ color: 'red' }} data-testid="error-message">
-          {error}
-        </p>
-      )}
-
-      {success && (
-        <p style={{ color: 'green' }} data-testid="success-message">
-          {success}
-        </p>
-      )}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {success && <p style={{ color: "green" }}>{success}</p>}
     </form>
   );
 };
