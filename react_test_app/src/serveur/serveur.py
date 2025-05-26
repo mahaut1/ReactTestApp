@@ -1,8 +1,9 @@
+from pydantic import BaseModel, EmailStr, field_validator
+from datetime import date
 import mysql.connector
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from passlib.context import CryptContext
 
 app = FastAPI()
@@ -16,7 +17,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Connexion à la base de données
 conn = mysql.connector.connect(
     database=os.getenv("MYSQL_DATABASE"),
     user=os.getenv("MYSQL_USER"),
@@ -25,7 +25,6 @@ conn = mysql.connector.connect(
     host=os.getenv("MYSQL_HOST")
 )
 
-# Hashage des mots de passe
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password: str) -> str:
@@ -35,21 +34,31 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 class User(BaseModel):
-    name: str
-    email: str
+    first_name: str
+    last_name: str
+    email: EmailStr
     password: str
+    birth_date: date
+
+    @field_validator("birth_date")
+    def check_majority(cls, v):
+        today = date.today()
+        age = today.year - v.year - ((today.month, today.day) < (v.month, v.day))
+        if age < 18:
+            raise ValueError("L'utilisateur doit être majeur (18 ans minimum).")
+        return v
 
 class UserLogin(BaseModel):
-    email: str
+    email: EmailStr
     password: str
 
-# Fonction utilitaire pour transformer tuple SQL en dict
 def user_to_dict(row):
     return {
         "id": row[0],
-        "name": row[1],
-        "email": row[2],
-        "created_at": row[4].isoformat() if row[4] else None
+        "first_name": row[1],
+        "last_name": row[2],
+        "email": row[3],
+        "created_at": row[5].isoformat() if row[5] else None
     }
 
 @app.get("/users")
@@ -71,8 +80,8 @@ async def register_user(user: User):
 
     hashed_pwd = hash_password(user.password)
     cursor.execute(
-        "INSERT INTO users (name, email, password) VALUES (%s, %s, %s)",
-        (user.name, user.email, hashed_pwd)
+        "INSERT INTO users (first_name, last_name, email, password, birth_date) VALUES (%s, %s, %s, %s, %s)",
+        (user.first_name, user.last_name, user.email, hashed_pwd, user.birth_date)
     )
     conn.commit()
     cursor.close()
