@@ -32,4 +32,4 @@ async def get_users():
     records=cursor.fetchall()
     print("Total number of rows in table: ", cursor.rowcount)
     #renvoyer nos données et 200 OK
-    return {'utu'}
+    return {"utilisateurs": records}

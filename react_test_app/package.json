@@ -4,6 +4,7 @@
   "private": false,
   "homepage": "https://mahaut1.github.io/ReactTestApp/",
   "dependencies": {
+    "axios": "^1.9.0",
     "cra-template": "1.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

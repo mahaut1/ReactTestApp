@@ -35,3 +35,19 @@ services:
       dockerfile: Dockerfile
    # command:  uvicorn serveur:app --proxy-headers --host 0.0.0 --port 8000 
    # copy:  ./ /serveur
+
+  react:
+    image: react
+    build: .
+    ports:
+      - 3000:3000
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+      - REACT_APP_DB_URL=toto
+    volumes:
+     - .:/app
+     - /app/node_modules
+
+    depends_on:
+      - serveur
+    command: npm start
