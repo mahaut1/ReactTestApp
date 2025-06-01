@@ -43,6 +43,30 @@ class UserLogin(BaseModel):
     email: str
     password: str
 
+class ExtendedUser(BaseModel):
+    firstName: str
+    lastName: str
+    email: str
+    password: str
+    birthDate: str | None = None
+    city: str | None = None
+    postalCode: str | None = None
+
+
+@app.post("/users/extended-register")
+async def extended_register_user(user: ExtendedUser):
+    cursor = conn.cursor()
+    name = f"{user.firstName} {user.lastName}"
+    cursor.execute("SELECT id FROM users WHERE email = %s", (user.email,))
+    if cursor.fetchone() is not None:
+        raise HTTPException(status_code=400, detail="Email déjà utilisé")
+    cursor.execute(
+        "INSERT INTO users (name, email, password) VALUES (%s, %s, %s)",
+        (name, user.email, user.password)
+    )
+    conn.commit()
+    cursor.close()
+    return {"message": "Utilisateur enregistré avec succès"}
 
 # Endpoint pour récupérer tous les utilisateurs
 @app.get("/users")
