@@ -93,7 +93,7 @@ const RegistrationForm = () => {
       <input id="city" name="city" placeholder='Ville' value={formData.city} onChange={handleChange} />
 
       <label htmlFor="postalCode">Code Postal</label>
-      <input id="postalCode" name="postalCode" placeholder='Code postal' value={formData.postalCode} onChange={handleChange} />
+      <input id="postalCode" name="postalCode" placeholder='Code Postal' value={formData.postalCode} onChange={handleChange} />
 
       <button type="submit">S'enregistrer</button>
 
