@@ -34,18 +34,20 @@ test('submits the form successfully with valid data', async () => {
 });
 
 test("affiche une erreur si le code postal est invalide", async () => {
-    render(<RegistrationForm />);
-  
-    fireEvent.change(screen.getByPlaceholderText('Prénom'), { target: { value: 'Jean' } });
-    fireEvent.change(screen.getByPlaceholderText('Nom'), { target: { value: 'Dupont' } });
-    fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'jean.dupont@example.com' } });
-    fireEvent.change(screen.getByLabelText('Date de naissance'), { target: { value: '2000-01-01' } });
-    fireEvent.change(screen.getByPlaceholderText('Code Postal'), { target: { value: 'abcde' } });
-    
-    fireEvent.click(screen.getByText("S'enregistrer"));
-  
-    await screen.findByText('Code postal invalide');
-  });
+  render(<RegistrationForm />);
+
+  fireEvent.change(screen.getByPlaceholderText('Prénom'), { target: { value: 'Jean' } });
+  fireEvent.change(screen.getByPlaceholderText('Nom'), { target: { value: 'Dupont' } });
+  fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'jean.dupont@example.com' } });
+  fireEvent.change(screen.getByLabelText('Date de naissance'), { target: { value: '2000-01-01' } });
+  fireEvent.change(screen.getByPlaceholderText('Code Postal'), { target: { value: 'abcde' } });
+  fireEvent.change(screen.getByPlaceholderText('mot de passe'), { target: { value: '123456' } });
+
+  fireEvent.click(screen.getByText("S'enregistrer"));
+
+  await screen.findByText('Code postal invalide');
+});
+
 
   test("affiche une erreur si l'email est invalide", async () => {
     render(<RegistrationForm />);
