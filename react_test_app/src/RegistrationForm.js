@@ -7,23 +7,24 @@ const RegistrationForm = () => {
     firstName: '',
     lastName: '',
     email: '',
+    password: '',
     birthDate: '',
     city: '',
     postalCode: '',
   });
 
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
 
-    setError(''); // Réinitialise les erreurs à chaque soumission
-
-    // Validation des champs
     if (!validateName(formData.firstName) || !validateName(formData.lastName)) {
       setError('Nom ou prénom invalide');
       return;
@@ -31,6 +32,11 @@ const RegistrationForm = () => {
 
     if (!validateEmail(formData.email)) {
       setError('Email invalide');
+      return;
+    }
+
+    if (!formData.password || formData.password.length < 6) {
+      setError('Mot de passe trop court (minimum 6 caractères)');
       return;
     }
 
@@ -44,76 +50,55 @@ const RegistrationForm = () => {
       return;
     }
 
-    // Sauvegarde dans localStorage si tout est valide
-    localStorage.setItem('userData', JSON.stringify(formData));
-    alert('Enregistrement réussi !');
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'Erreur lors de l\'inscription');
+      }
+
+      setSuccess('Enregistrement réussi !');
+      localStorage.setItem('userData', JSON.stringify(formData));
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor="firstName">Prénom</label>
-      <input
-        id="firstName"
-        name="firstName"
-        placeholder="Prénom"
-        value={formData.firstName}
-        onChange={handleChange}
-      />
+      <input id="firstName" name="firstName" value={formData.firstName} onChange={handleChange} />
 
       <label htmlFor="lastName">Nom</label>
-      <input
-        id="lastName"
-        name="lastName"
-        placeholder="Nom"
-        value={formData.lastName}
-        onChange={handleChange}
-      />
+      <input id="lastName" name="lastName" value={formData.lastName} onChange={handleChange} />
 
       <label htmlFor="email">Email</label>
-      <input
-        id="email"
-        name="email"
-        placeholder="Email"
-        value={formData.email}
-        onChange={handleChange}
-      />
+      <input id="email" name="email" type="email" value={formData.email} onChange={handleChange} />
+
+      <label htmlFor="password">Mot de passe</label>
+      <input id="password" name="password" type="password" value={formData.password} onChange={handleChange} />
 
       <label htmlFor="birthDate">Date de naissance</label>
-      <input
-        id="birthDate"
-        type="date"
-        name="birthDate"
-        placeholder="Date de naissance"
-        value={formData.birthDate}
-        onChange={handleChange}
-      />
+      <input id="birthDate" name="birthDate" type="date" value={formData.birthDate} onChange={handleChange} />
 
       <label htmlFor="city">Ville</label>
-      <input
-        id="city"
-        name="city"
-        placeholder="Ville"
-        value={formData.city}
-        onChange={handleChange}
-      />
+      <input id="city" name="city" value={formData.city} onChange={handleChange} />
 
       <label htmlFor="postalCode">Code Postal</label>
-      <input
-        id="postalCode"
-        name="postalCode"
-        placeholder="Code Postal"
-        value={formData.postalCode}
-        onChange={handleChange}
-      />
+      <input id="postalCode" name="postalCode" value={formData.postalCode} onChange={handleChange} />
 
       <button type="submit">S'enregistrer</button>
 
-      {/* Affichage de l'erreur avec data-testid */}
-      {error && (
-        <p style={{ color: 'red' }} data-testid="error-message">
-          {error}
-        </p>
-      )}
+      {error && <p style={{ color: 'red' }} data-testid="error-message">{error}</p>}
+      {success && <p style={{ color: 'green' }}>{success}</p>}
     </form>
   );
 };

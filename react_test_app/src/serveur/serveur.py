@@ -5,8 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from passlib.context import CryptContext
 
-app= FastAPI()
-origins = ["*"]
+app = FastAPI()
+
+origins = ["*"]  # Autoriser tous les domaines
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,8 +17,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Connect to the database
-conn= mysql.connector.connect(
+# Connexion à la base de données
+conn = mysql.connector.connect(
     database=os.getenv("MYSQL_DATABASE"),
     user=os.getenv("MYSQL_USER"),
     password=os.getenv("MYSQL_PASSWORD"),
@@ -34,68 +35,53 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-class User(BaseModel):
-    name: str
-    email: str
-    password: str
-
-class UserLogin(BaseModel):
-    email: str
-    password: str
-
+# Modèle pour l'enregistrement complet
 class ExtendedUser(BaseModel):
     firstName: str
     lastName: str
     email: str
     password: str
-    birthDate: str | None = None
-    city: str | None = None
-    postalCode: str | None = None
+    birthDate: str
+    city: str
+    postalCode: str
 
+# Modèle pour la connexion
+class UserLogin(BaseModel):
+    email: str
+    password: str
 
-@app.post("/users/extended-register")
-async def extended_register_user(user: ExtendedUser):
+# ➕ Enregistrement d'un utilisateur étendu
+@app.post("/users")
+async def register_user(user: ExtendedUser):
     cursor = conn.cursor()
-    name = f"{user.firstName} {user.lastName}"
+
+    full_name = f"{user.firstName} {user.lastName}"
+
     cursor.execute("SELECT id FROM users WHERE email = %s", (user.email,))
     if cursor.fetchone() is not None:
         raise HTTPException(status_code=400, detail="Email déjà utilisé")
+
     cursor.execute(
-        "INSERT INTO users (name, email, password) VALUES (%s, %s, %s)",
-        (name, user.email, user.password)
+        """
+        INSERT INTO users (name, email, password, birthDate, city, postalCode)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        """,
+        (
+            full_name,
+            user.email,
+            hash_password(user.password),
+            user.birthDate,
+            user.city,
+            user.postalCode,
+        ),
     )
+
     conn.commit()
     cursor.close()
+
     return {"message": "Utilisateur enregistré avec succès"}
 
-# Endpoint pour récupérer tous les utilisateurs
-@app.get("/users")
-async def get_users():
-    cursor=conn.cursor()
-    sql_select_Query="SELECT * FROM users"
-    cursor.execute(sql_select_Query)
-    #get all records
-    records=cursor.fetchall()
-    print("Total number of rows in table: ", cursor.rowcount)
-    #renvoyer nos données et 200 OK
-    return {"utilisateurs": records}
-
-# Endpoint pour enregistrer un nouvel utilisateur
-@app.post("/users/register")
-async def register_user(user: User):
-    cursor = conn.cursor()
-    cursor.execute("SELECT id FROM users WHERE email = %s", (user.email,))
-    if cursor.fetchone() is not None:
-        raise HTTPException(status_code=400, detail="Email déjà utilisé")
-    cursor.execute(
-        "INSERT INTO users (name, email, password) VALUES (%s, %s, %s)",
-        (user.name, user.email, user.password)
-    )
-    conn.commit()
-    cursor.close()
-    return {"message": "Utilisateur enregistré avec succès"}
-
-# Endpoint pour la connexion utilisateur
+# 🔐 Connexion utilisateur
 @app.post("/users/login")
 async def login_user(user: UserLogin):
     cursor = conn.cursor()
@@ -108,8 +94,16 @@ async def login_user(user: UserLogin):
 
     user_id, hashed_password = result
 
-    # Vérification du mot de passe
     if not verify_password(user.password, hashed_password):
         raise HTTPException(status_code=400, detail="Mot de passe incorrect")
 
     return {"message": "Connexion réussie", "user_id": user_id}
+
+# 👀 Récupération de tous les utilisateurs
+@app.get("/users")
+async def get_users():
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users")
+    records = cursor.fetchall()
+    cursor.close()
+    return {"utilisateurs": records}
