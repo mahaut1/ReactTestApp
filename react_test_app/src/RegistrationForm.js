@@ -75,25 +75,25 @@ const RegistrationForm = () => {
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor="firstName">Prénom</label>
-      <input id="firstName" name="firstName" value={formData.firstName} onChange={handleChange} />
+      <input id="firstName" name="firstName" placeholder="Prénom" value={formData.firstName} onChange={handleChange} />
 
       <label htmlFor="lastName">Nom</label>
-      <input id="lastName" name="lastName" value={formData.lastName} onChange={handleChange} />
+      <input id="lastName" name="lastName" placeholder='Nom' value={formData.lastName} onChange={handleChange} />
 
       <label htmlFor="email">Email</label>
-      <input id="email" name="email" type="email" value={formData.email} onChange={handleChange} />
+      <input id="email" name="email" type="email" placeholder='Email' value={formData.email} onChange={handleChange} />
 
       <label htmlFor="password">Mot de passe</label>
-      <input id="password" name="password" type="password" value={formData.password} onChange={handleChange} />
+      <input id="password" name="password" type="password" placeholder='mot de passe' value={formData.password} onChange={handleChange} />
 
       <label htmlFor="birthDate">Date de naissance</label>
-      <input id="birthDate" name="birthDate" type="date" value={formData.birthDate} onChange={handleChange} />
+      <input id="birthDate" name="birthDate" placeholder='Date de naissance' type="date" value={formData.birthDate} onChange={handleChange} />
 
       <label htmlFor="city">Ville</label>
-      <input id="city" name="city" value={formData.city} onChange={handleChange} />
+      <input id="city" name="city" placeholder='Ville' value={formData.city} onChange={handleChange} />
 
       <label htmlFor="postalCode">Code Postal</label>
-      <input id="postalCode" name="postalCode" value={formData.postalCode} onChange={handleChange} />
+      <input id="postalCode" name="postalCode" placeholder='Code postal' value={formData.postalCode} onChange={handleChange} />
 
       <button type="submit">S'enregistrer</button>
 
