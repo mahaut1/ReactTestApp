@@ -42,8 +42,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: react_test_app/build
-          if-no-files-found: error
-
       - name: Authenticate with npm
         run: echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > ~/.npmrc
 

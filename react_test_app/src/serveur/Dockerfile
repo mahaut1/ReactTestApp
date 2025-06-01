@@ -8,7 +8,7 @@ WORKDIR /serveur
 COPY ./ /serveur
 
 # Installer les dépendances
-RUN pip install mysql-connector-python fastapi uvicorn passlib[bcrypt]
+RUN pip install mysql-connector-python fastapi uvicorn passlib[bcrypt] pydantic[email]
 
 # Exposer le port utilisé par l'application FastAPI
 EXPOSE 8000

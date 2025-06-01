@@ -2,7 +2,7 @@ import mysql.connector
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from passlib.context import CryptContext
 
 app = FastAPI()
@@ -35,11 +35,11 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-# Modèle pour l'enregistrement complet
-class ExtendedUser(BaseModel):
+# Modèle pour l'enregistrement utilisateur
+class UserRegister(BaseModel):
     firstName: str
     lastName: str
-    email: str
+    email: EmailStr
     password: str
     birthDate: str
     city: str
@@ -47,27 +47,28 @@ class ExtendedUser(BaseModel):
 
 # Modèle pour la connexion
 class UserLogin(BaseModel):
-    email: str
+    email: EmailStr
     password: str
 
-# ➕ Enregistrement d'un utilisateur étendu
+# ➕ Enregistrement d'un utilisateur
 @app.post("/users")
-async def register_user(user: ExtendedUser):
+async def register_user(user: UserRegister):
     cursor = conn.cursor()
 
-    full_name = f"{user.firstName} {user.lastName}"
-
+    # Vérifier si l'email existe déjà
     cursor.execute("SELECT id FROM users WHERE email = %s", (user.email,))
     if cursor.fetchone() is not None:
+        cursor.close()
         raise HTTPException(status_code=400, detail="Email déjà utilisé")
 
     cursor.execute(
         """
-        INSERT INTO users (name, email, password, birthDate, city, postalCode)
-        VALUES (%s, %s, %s, %s, %s, %s)
+        INSERT INTO users (firstName, lastName, email, password, birthDate, city, postalCode)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
         """,
         (
-            full_name,
+            user.firstName,
+            user.lastName,
             user.email,
             hash_password(user.password),
             user.birthDate,
