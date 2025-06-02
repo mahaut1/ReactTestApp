@@ -3,6 +3,7 @@ import RegistrationForm from './RegistrationForm';
 import './App.css'
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import UserList from './UserList';
 function App() {
   console.log(process.env);
   const url =process.env.REACT_APP_API_URL;
@@ -29,6 +30,7 @@ function App() {
         <h1>Users manager</h1>
         <p>{usersCount} user(s) already registered</p>
         </header>
+         <UserList />
         <h1>Formulaire d'Enregistrement</h1>
         <RegistrationForm />
     </div>

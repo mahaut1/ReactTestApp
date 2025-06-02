@@ -1,6 +1,6 @@
 import mysql.connector
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Path
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from passlib.context import CryptContext
@@ -130,4 +130,19 @@ async def get_users():
         })
 
     return {"utilisateurs": users}
+
+# Suppresion d'un utilisateur par son ID
+@app.delete("/users/{user_id}")
+async def delete_user(user_id: int = Path(..., gt=0)):
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM users WHERE id = %s", (user_id,))
+    if cursor.fetchone() is None:
+        cursor.close()
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+
+    cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
+    conn.commit()
+    cursor.close()
+
+    return {"message": "Utilisateur supprimé"}
 
