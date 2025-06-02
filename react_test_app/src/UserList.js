@@ -26,7 +26,7 @@ const UserList = () => {
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/users/${id}`, {
         method: "DELETE",
       });
 
