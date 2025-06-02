@@ -36,51 +36,6 @@ conn = mysql.connector.connect(
     host=os.getenv("MYSQL_HOST")
 )
 
-# S'assurer que la colonne isAdmin existe dans la table users
-def ensure_users_table_has_isAdmin():
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SHOW COLUMNS FROM users LIKE 'isAdmin'")
-        result = cursor.fetchone()
-        if not result:
-            cursor.execute("ALTER TABLE users ADD COLUMN isAdmin BOOLEAN DEFAULT FALSE")
-            conn.commit()
-    finally:
-        cursor.close()
-
-# Créer un utilisateur administrateur si non existant
-def create_admin_user():
-    admin_email = os.getenv("ADMIN_EMAIL")
-    admin_password = os.getenv("ADMIN_PASSWORD")
-
-    if not admin_email or not admin_password:
-        print("ADMIN_EMAIL ou ADMIN_PASSWORD manquant dans les variables d'environnement.")
-        return
-
-    cursor = conn.cursor()
-    cursor.execute("SELECT id FROM users WHERE email = %s", (admin_email,))
-    if cursor.fetchone() is None:
-        cursor.execute(
-            """
-            INSERT INTO users (firstName, lastName, email, password, birthDate, city, postalCode, isAdmin)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """,
-            (
-                "Loïse",
-                "Fenoll",
-                admin_email,
-                hash_password(admin_password),
-                "1990-01-01",
-                "Adminville",
-                "00000",
-                True
-            )
-        )
-        conn.commit()
-    cursor.close()
-
-ensure_users_table_has_isAdmin()
-create_admin_user()
 
 # Modèle pour l'enregistrement utilisateur
 class UserRegister(BaseModel):
@@ -149,11 +104,15 @@ async def login_user(user: UserLogin):
 
     return {"message": "Connexion réussie", "user_id": user_id, "is_admin": is_admin}
 
-# 👀 Récupération de tous les utilisateurs
+
+#  Récupération de tous les utilisateurs avec toutes les informations
 @app.get("/users")
 async def get_users():
     cursor = conn.cursor()
-    cursor.execute("SELECT id, firstName, lastName, email FROM users")
+    cursor.execute("""
+        SELECT id, firstName, lastName, email, birthDate, city, postalCode, isAdmin
+        FROM users
+    """)
     records = cursor.fetchall()
     cursor.close()
 
@@ -163,7 +122,12 @@ async def get_users():
             "id": r[0],
             "firstName": r[1],
             "lastName": r[2],
-            "email": r[3]
+            "email": r[3],
+            "birthDate": r[4],
+            "city": r[5],
+            "postalCode": r[6],
+            "isAdmin": r[7]
         })
 
     return {"utilisateurs": users}
+
