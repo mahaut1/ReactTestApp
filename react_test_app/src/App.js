@@ -1,40 +1,35 @@
-import React from 'react';
+import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 import RegistrationForm from './RegistrationForm';
-import './App.css'
-import axios from 'axios';
-import { useState, useEffect } from 'react';
-import UserList from './UserList';
+import LoginPage from './LoginFile';
+import AdminPage from './AdminPage';
+import RequireAdmin from './RequireAdmin';
+import HomePage from './HomePage';
+
 function App() {
-  console.log(process.env);
-  const url =process.env.REACT_APP_API_URL;
-
-  let [usersCount, setUsersCount] = useState(0);
-  useEffect(() => {
-    async function countUsers() {
-      try {
-        const api= axios.create({
-          baseURL: `${url}`,
-        });
-        const response = await api.get('/users');
-        console.log(response.data);
-        setUsersCount(response.data.utilisateurs.length);
-      } catch (error) {
-        console.error('Erreur lors de la récupération du nombre d\'utilisateurs:', error);
-      }
-    }
-    countUsers();
-  }, [url]);
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Users manager</h1>
-        <p>{usersCount} user(s) already registered</p>
+    <Router>
+      <div className="App">
+        <header className="App-header">
+          <h1>User Manager</h1>
         </header>
-         <UserList />
-        <h1>Formulaire d'Enregistrement</h1>
-        <RegistrationForm />
-    </div>
 
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/register" element={<RegistrationForm />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/admin"
+            element={
+              <RequireAdmin>
+                <AdminPage />
+              </RequireAdmin>
+            }
+          />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
