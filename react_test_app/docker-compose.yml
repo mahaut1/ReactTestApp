@@ -9,7 +9,7 @@ services:
     volumes:
       - ./SQLFiles:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p$${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,7 +24,6 @@ services:
     build:
       context: ./src/serveur
       dockerfile: Dockerfile
-    image: python:3.11
     restart: always
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
