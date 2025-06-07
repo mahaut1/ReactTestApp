@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -12,7 +13,6 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setSuccess('');
 
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/users/login`, {
@@ -27,12 +27,17 @@ const LoginPage = () => {
         throw new Error(data.detail || 'Erreur de connexion');
       }
 
-      setSuccess('Connexion réussie !');
+      // Enregistre les infos dans localStorage
       localStorage.setItem('userId', data.user_id);
-      localStorage.setItem('isAdmin', data.is_admin);
+      localStorage.setItem('isAdmin', data.is_admin === true || data.is_admin === 1 ? 'true' : 'false');
 
-      // Redirection vers une autre page si besoin
-      // window.location.href = "/dashboard";
+      // Redirection selon le rôle
+      if (data.is_admin === true || data.is_admin === 1) {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
+
     } catch (err) {
       setError(err.message);
     }
@@ -65,7 +70,6 @@ const LoginPage = () => {
       <button type="submit">Se connecter</button>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
     </form>
   );
 };
