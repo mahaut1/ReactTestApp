@@ -1,13 +1,15 @@
 import { Navigate } from 'react-router-dom';
+import React from 'react';
 
 const RequireAdmin = ({ children }) => {
   const isAdmin = localStorage.getItem('isAdmin') === 'true';
+  console.log('RequireAdmin isAdmin:', isAdmin);
 
   if (!isAdmin) {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
+  return <>{children}</>;
 };
 
 export default RequireAdmin;

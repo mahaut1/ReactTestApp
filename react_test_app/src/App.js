@@ -1,6 +1,6 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
+import React from 'react';
 import RegistrationForm from './RegistrationForm';
 import LoginPage from './LoginFile';
 import AdminPage from './AdminPage';
@@ -9,7 +9,7 @@ import HomePage from './HomePage';
 
 function App() {
   return (
-    <Router>
+    <Router basename="/ReactTestApp">
       <div className="App">
         <header className="App-header">
           <h1>User Manager</h1>
