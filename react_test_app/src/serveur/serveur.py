@@ -82,6 +82,8 @@ def initialize_admin_user():
 
 # Appeler l'initialisation une fois au démarrage
 initialize_admin_user()
+
+
 # ➕ Enregistrement d'un utilisateur
 @app.post("/users")
 async def register_user(user: UserRegister):

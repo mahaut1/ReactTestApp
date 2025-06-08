@@ -6,10 +6,12 @@ import LoginPage from './LoginFile';
 import AdminPage from './AdminPage';
 import RequireAdmin from './RequireAdmin';
 import HomePage from './HomePage';
+import Navbar from './NavBar';
 
 function App() {
   return (
     <div className="App">
+      <Navbar />
       <header className="App-header">
         <h1>User Manager</h1>
       </header>

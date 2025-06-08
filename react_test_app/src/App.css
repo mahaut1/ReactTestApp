@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  padding-top: 80px; /* Ajuste selon la hauteur de ta NavBar */
 }
 
 .App-logo {
@@ -15,7 +16,8 @@
 
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
+  padding: 2rem;
+  min-height: auto; /* ✅ ne prend que la hauteur nécessaire */
   display: flex;
   flex-direction: column;
   align-items: center;
