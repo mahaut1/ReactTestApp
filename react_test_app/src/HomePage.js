@@ -9,7 +9,6 @@ const HomePage = () => {
       <ul>
         <li><Link to="/register">Inscription</Link></li>
         <li><Link to="/login">Connexion</Link></li>
-        <li><Link to="/admin">Page Admin</Link></li>
       </ul>
     </div>
   );

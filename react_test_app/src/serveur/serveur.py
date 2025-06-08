@@ -52,6 +52,36 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
+
+# 🚀 Initialisation de l’administrateur
+def initialize_admin_user():
+    admin_email = os.getenv("ADMIN_EMAIL")
+    admin_password = os.getenv("ADMIN_PASSWORD")
+
+    if not admin_email or not admin_password:
+        print("⚠️ Identifiants admin non définis dans les variables d'environnement.")
+        return
+
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM users WHERE email = %s", (admin_email,))
+    if cursor.fetchone():
+        print("✅ Administrateur déjà présent.")
+        cursor.close()
+        return
+
+    cursor.execute("""
+        INSERT INTO users (firstName, lastName, email, password, birthDate, city, postalCode, isAdmin)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    """, (
+        "Admin", "Principal", admin_email, hash_password(admin_password),
+        "1970-01-01", "AdminCity", "00000", True
+    ))
+    conn.commit()
+    cursor.close()
+    print("✅ Administrateur ajouté avec succès.")
+
+# Appeler l'initialisation une fois au démarrage
+initialize_admin_user()
 # ➕ Enregistrement d'un utilisateur
 @app.post("/users")
 async def register_user(user: UserRegister):
