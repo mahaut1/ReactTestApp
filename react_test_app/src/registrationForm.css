@@ -51,3 +51,11 @@ p {
     font-size: 14px;
     text-align: center;
 }
+
+.error {
+  color: #d8000c;
+  background-color: #ffd2d2;
+  padding: 5px;
+  border-radius: 3px;
+  margin-bottom: 10px;
+}

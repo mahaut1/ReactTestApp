@@ -28,7 +28,7 @@ const LoginPage = () => {
       }
 
       // Enregistre les infos dans localStorage
-      localStorage.setItem('userId', data.user_id);
+localStorage.setItem('userId', String(data.user_id));
       localStorage.setItem('isAdmin', data.is_admin === true || data.is_admin === 1 ? 'true' : 'false');
 localStorage.setItem('userEmail', formData.email);
         // Redirection selon le rôle
