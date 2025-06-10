@@ -14,12 +14,18 @@ test('displays error for invalid email', async () => {
   });
 
 test('displays error for invalid name', async () => {
-  render(<RegistrationForm />);
+  render(<RegistrationForm />); 
   fireEvent.change(screen.getByPlaceholderText('Prénom'), { target: { value: 'Jean123' } });
   fireEvent.change(screen.getByPlaceholderText('Nom'), { target: { value: 'Dupont!' } });
+  fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'jean.dupont@example.com' } });
+  fireEvent.change(screen.getByPlaceholderText('mot de passe'), { target: { value: '123456' } });
+  fireEvent.change(screen.getByPlaceholderText('Code Postal'), { target: { value: '75001' } });
+  fireEvent.change(screen.getByLabelText('Date de naissance'), { target: { value: '2000-01-01' } });
   fireEvent.click(screen.getByText("S'enregistrer"));
-  await screen.findByText('Nom ou prénom invalide');
+  expect(await screen.findByText('Prénom invalide')).toBeInTheDocument();
+  expect(screen.getByText('Nom invalide')).toBeInTheDocument();
 });
+
 
 test('submits the form successfully with valid data', async () => {
   render(<RegistrationForm />);

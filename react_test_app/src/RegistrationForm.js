@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
-import { validateName, validateEmail, validateAge, validatePostalCode } from './validation';
+import { toast, ToastContainer } from 'react-toastify';
+import {
+  validateName,
+  validateEmail,
+  validateAge,
+  validatePostalCode
+} from './validation';
+import axios from 'axios';
+import 'react-toastify/dist/ReactToastify.css';
 import './registrationForm.css';
 
-const RegistrationForm = () => {
+function RegistrationForm() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -10,97 +18,169 @@ const RegistrationForm = () => {
     password: '',
     birthDate: '',
     city: '',
-    postalCode: '',
+    postalCode: ''
   });
 
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [errors, setErrors] = useState({});
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const validateField = (name, value) => {
+    switch (name) {
+      case 'firstName':
+        return validateName(value) ? '' : 'Prénom invalide';
+      case 'lastName':
+        return validateName(value) ? '' : 'Nom invalide';
+      case 'email':
+        return validateEmail(value) ? '' : 'Email invalide';
+      case 'password':
+        return value.length >= 6 ? '' : 'Mot de passe trop court';
+      case 'birthDate':
+        return value && !validateAge(value) ? 'Vous devez avoir au moins 18 ans' : '';
+      case 'postalCode':
+        return validatePostalCode(value) ? '' : 'Code postal invalide';
+      default:
+        return '';
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
-    if (!validateName(formData.firstName) || !validateName(formData.lastName)) {
-      setError('Nom ou prénom invalide');
-      return;
-    }
+    // Mise à jour de l'erreur liée à ce champ
+    setErrors((prev) => ({
+      ...prev,
+      [name]: validateField(name, value)
+    }));
+  };
 
-    if (!validateEmail(formData.email)) {
-      setError('Email invalide');
-      return;
-    }
-
-    if (!formData.password || formData.password.length < 6) {
-      setError('Mot de passe trop court (minimum 6 caractères)');
-      return;
-    }
-
-    if (!validateAge(formData.birthDate)) {
-      setError('Vous devez avoir au moins 18 ans');
-      return;
-    }
-
-    if (!validatePostalCode(formData.postalCode)) {
-      setError('Code postal invalide');
-      return;
-    }
-
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/users`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Erreur lors de l\'inscription');
+  const validateAll = () => {
+    const newErrors = {};
+    for (const field in formData) {
+      const error = validateField(field, formData[field]);
+      if (error) {
+        newErrors[field] = error;
       }
-
-      setSuccess('Enregistrement réussi !');
-      localStorage.setItem('userData', JSON.stringify(formData));
-    } catch (err) {
-      setError(err.message);
     }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (validateAll()) {
+    try {
+      const response = await axios.post('http://localhost:8000/users', formData); 
+      toast.success('Inscription réussie ! 🎉');
+      console.log(response.data);
+
+      // Réinitialisation du formulaire
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        birthDate: '',
+        city: '',
+        postalCode: ''
+      });
+      setErrors({});
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.detail) {
+        toast.error(`Erreur : ${error.response.data.detail}`);
+      } else {
+        toast.error('Une erreur est survenue lors de l’inscription.');
+      }
+      console.error(error);
+    }
+  }
+};
+
+
+  const isFormValid = () => {
+    return (
+      validateName(formData.firstName) &&
+      validateName(formData.lastName) &&
+      validateEmail(formData.email) &&
+      formData.password.length >= 6 &&
+      (!formData.birthDate || validateAge(formData.birthDate)) &&
+      validatePostalCode(formData.postalCode)
+    );
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="firstName">Prénom</label>
-      <input id="firstName" name="firstName" placeholder="Prénom" value={formData.firstName} onChange={handleChange} />
+    <>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="firstName"
+          placeholder="Prénom"
+          value={formData.firstName}
+          onChange={handleChange}
+        />
+        {errors.firstName && <span className="error">{errors.firstName}</span>}
 
-      <label htmlFor="lastName">Nom</label>
-      <input id="lastName" name="lastName" placeholder='Nom' value={formData.lastName} onChange={handleChange} />
+        <input
+          type="text"
+          name="lastName"
+          placeholder="Nom"
+          value={formData.lastName}
+          onChange={handleChange}
+        />
+        {errors.lastName && <span className="error">{errors.lastName}</span>}
 
-      <label htmlFor="email">Email</label>
-      <input id="email" name="email" type="email" placeholder='Email' value={formData.email} onChange={handleChange} />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+        />
+        {errors.email && <span className="error">{errors.email}</span>}
 
-      <label htmlFor="password">Mot de passe</label>
-      <input id="password" name="password" type="password" placeholder='mot de passe' value={formData.password} onChange={handleChange} />
+        <input
+          type="password"
+          name="password"
+          placeholder="mot de passe"
+          value={formData.password}
+          onChange={handleChange}
+        />
+        {errors.password && <span className="error">{errors.password}</span>}
 
-      <label htmlFor="birthDate">Date de naissance</label>
-      <input id="birthDate" name="birthDate" placeholder='Date de naissance' type="date" value={formData.birthDate} onChange={handleChange} />
+        <label htmlFor="birthDate">Date de naissance</label>
+        <input
+          type="date"
+          name="birthDate"
+          id="birthDate"
+          value={formData.birthDate}
+          onChange={handleChange}
+        />
+        {errors.birthDate && <span className="error">{errors.birthDate}</span>}
 
-      <label htmlFor="city">Ville</label>
-      <input id="city" name="city" placeholder='Ville' value={formData.city} onChange={handleChange} />
+        <input
+          type="text"
+          name="city"
+          placeholder="Ville"
+          value={formData.city}
+          onChange={handleChange}
+        />
+        {/* Pas de validation spécifique pour la ville */}
 
-      <label htmlFor="postalCode">Code Postal</label>
-      <input id="postalCode" name="postalCode" placeholder='Code Postal' value={formData.postalCode} onChange={handleChange} />
+        <input
+          type="text"
+          name="postalCode"
+          placeholder="Code Postal"
+          value={formData.postalCode}
+          onChange={handleChange}
+        />
+        {errors.postalCode && <span className="error">{errors.postalCode}</span>}
 
-      <button type="submit">S'enregistrer</button>
-
-      {error && <p style={{ color: 'red' }} data-testid="error-message">{error}</p>}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
-    </form>
+        <button type="submit" disabled={!isFormValid()}>
+          S'enregistrer
+        </button>
+      </form>
+      <ToastContainer />
+    </>
   );
-};
+}
 
 export default RegistrationForm;
