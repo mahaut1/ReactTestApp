@@ -1,6 +1,6 @@
 import './App.css';
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import RegistrationForm from './RegistrationForm';
 import LoginPage from './LoginFile';
 import AdminPage from './AdminPage';
@@ -28,6 +28,7 @@ function App() {
             </RequireAdmin>
           }
         />
+<Route path="*" element={<Navigate to="/register" replace />} />
       </Routes>
     </div>
   );

@@ -109,15 +109,16 @@ const handleSubmit = async (e) => {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
+<form onSubmit={handleSubmit} data-cy="registration-form">
         <input
           type="text"
           name="firstName"
           placeholder="Prénom"
           value={formData.firstName}
           onChange={handleChange}
+           data-cy="input-firstName"
         />
-        {errors.firstName && <span className="error">{errors.firstName}</span>}
+        {errors.firstName && <span className="error" data-cy="error-firstName">{errors.firstName}</span>}
 
         <input
           type="text"
@@ -125,8 +126,9 @@ const handleSubmit = async (e) => {
           placeholder="Nom"
           value={formData.lastName}
           onChange={handleChange}
+           data-cy="input-lastName"
         />
-        {errors.lastName && <span className="error">{errors.lastName}</span>}
+        {errors.lastName && <span className="error" data-cy="error-lastName">{errors.lastName}</span>}
 
         <input
           type="email"
@@ -134,8 +136,9 @@ const handleSubmit = async (e) => {
           placeholder="Email"
           value={formData.email}
           onChange={handleChange}
+           data-cy="input-email"
         />
-        {errors.email && <span className="error">{errors.email}</span>}
+        {errors.email && <span className="error" data-cy="error-email">{errors.email}</span>}
 
         <input
           type="password"
@@ -143,8 +146,9 @@ const handleSubmit = async (e) => {
           placeholder="mot de passe"
           value={formData.password}
           onChange={handleChange}
+           data-cy="input-password"
         />
-        {errors.password && <span className="error">{errors.password}</span>}
+        {errors.password && <span className="error" data-cy="error-password">{errors.password}</span>}
 
         <label htmlFor="birthDate">Date de naissance</label>
         <input
@@ -153,8 +157,9 @@ const handleSubmit = async (e) => {
           id="birthDate"
           value={formData.birthDate}
           onChange={handleChange}
+          data-cy="input-birthDate"
         />
-        {errors.birthDate && <span className="error">{errors.birthDate}</span>}
+        {errors.birthDate && <span className="error" data-cy="error-birthDate">{errors.birthDate}</span>}
 
         <input
           type="text"
@@ -162,6 +167,7 @@ const handleSubmit = async (e) => {
           placeholder="Ville"
           value={formData.city}
           onChange={handleChange}
+          data-cy="input-city"
         />
         {/* Pas de validation spécifique pour la ville */}
 
@@ -171,8 +177,9 @@ const handleSubmit = async (e) => {
           placeholder="Code Postal"
           value={formData.postalCode}
           onChange={handleChange}
+          data-cy="input-postalCode"
         />
-        {errors.postalCode && <span className="error">{errors.postalCode}</span>}
+        {errors.postalCode && <span className="error" data-cy="error-postalCode">{errors.postalCode}</span>}
 
         <button type="submit" disabled={!isFormValid()}>
           S'enregistrer

@@ -69,7 +69,7 @@ localStorage.setItem('userEmail', formData.email);
 
       <button type="submit">Se connecter</button>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+{error && <p style={{ color: 'red' }} data-testid="login-error">{error}</p>}
     </form>
   );
 };

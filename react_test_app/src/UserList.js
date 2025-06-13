@@ -3,8 +3,10 @@ import React, { useEffect, useState } from 'react';
 const UserList = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deletingUserId, setDeletingUserId] = useState(null);
 
   const fetchUsers = () => {
+    setLoading(true);
     fetch(`${process.env.REACT_APP_API_URL}/users`)
       .then((res) => res.json())
       .then((data) => {
@@ -26,16 +28,20 @@ const UserList = () => {
     if (!confirmDelete) return;
 
     try {
+      setDeletingUserId(id);
       const res = await fetch(`${process.env.REACT_APP_API_URL}/users/${id}`, {
         method: "DELETE",
       });
 
       if (!res.ok) throw new Error("Erreur lors de la suppression");
 
+      // Mise à jour dynamique du state sans recharger la page
       setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
     } catch (error) {
       console.error("Erreur :", error);
       alert("La suppression a échoué.");
+    } finally {
+      setDeletingUserId(null);
     }
   };
 
@@ -72,13 +78,24 @@ const UserList = () => {
               <td className="border p-2 text-center">
                 <button
                   onClick={() => deleteUser(u.id)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                  disabled={deletingUserId === u.id}
+                  className={`bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded ${
+                    deletingUserId === u.id ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  data-testid={`delete-button-${u.id}`}
                 >
-                  Supprimer
+                  {deletingUserId === u.id ? "Suppression..." : "Supprimer"}
                 </button>
               </td>
             </tr>
           ))}
+          {users.length === 0 && (
+            <tr>
+              <td colSpan="9" className="border p-2 text-center">
+                Aucun utilisateur trouvé.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
