@@ -35,7 +35,6 @@ const UserList = () => {
 
       if (!res.ok) throw new Error("Erreur lors de la suppression");
 
-      // Mise à jour dynamique du state sans recharger la page
       setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
     } catch (error) {
       console.error("Erreur :", error);

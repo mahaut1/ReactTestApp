@@ -19,12 +19,9 @@ describe('Connexion admin et suppression utilisateur', () => {
 
     cy.get('button[data-testid^="delete-button-"]').should('have.length.greaterThan', 0);
 
-    // Accepte automatiquement les confirmations window.confirm
     cy.on('window:confirm', () => true);
 
-    // Trouver un utilisateur non-admin et cliquer sur son bouton supprimer
     cy.get('tbody tr').filter((index, row) => {
-      // La colonne Admin est avant dernière (indice 7), on récupère le contenu texte
       const isAdminText = row.cells[7].innerText.trim();
       return isAdminText === "❌"; // On filtre que les non-admin
     }).first().within(() => {

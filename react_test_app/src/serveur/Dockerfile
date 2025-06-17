@@ -1,4 +1,3 @@
-# Utilise une image officielle de Python comme image de base
 FROM python:3.11-slim
 
 # Définir le répertoire de travail

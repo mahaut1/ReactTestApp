@@ -18,6 +18,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+print("🚀 Démarrage du serveur FastAPI...")
+
+@app.get("/")
+async def root():
+    return {"message": "Bienvenue sur l'API de gestion des utilisateurs"}
+
 # Configuration du hash pour les mots de passe
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -26,16 +32,6 @@ def hash_password(password: str) -> str:
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
-
-# Connexion à la base de données
-conn = mysql.connector.connect(
-    database=os.getenv("MYSQL_DATABASE"),
-    user=os.getenv("MYSQL_USER"),
-    password=os.getenv("MYSQL_PASSWORD"),
-    port=3306,
-    host=os.getenv("MYSQL_HOST")
-)
-
 
 # Modèle pour l'enregistrement utilisateur
 class UserRegister(BaseModel):
@@ -52,7 +48,6 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-
 # 🚀 Initialisation de l’administrateur
 def initialize_admin_user():
     admin_email = os.getenv("ADMIN_EMAIL")
@@ -62,6 +57,13 @@ def initialize_admin_user():
         print("⚠️ Identifiants admin non définis dans les variables d'environnement.")
         return
 
+    conn = mysql.connector.connect(
+        database=os.getenv("MYSQL_DATABASE"),
+        user=os.getenv("MYSQL_USER"),
+        password=os.getenv("MYSQL_PASSWORD"),
+        port=3306,
+        host=os.getenv("MYSQL_HOST")
+    )
     cursor = conn.cursor()
     cursor.execute("SELECT id FROM users WHERE email = %s", (admin_email,))
     if cursor.fetchone():
@@ -83,10 +85,16 @@ def initialize_admin_user():
 # Appeler l'initialisation une fois au démarrage
 initialize_admin_user()
 
-
 # ➕ Enregistrement d'un utilisateur
 @app.post("/users")
 async def register_user(user: UserRegister):
+    conn = mysql.connector.connect(
+        database=os.getenv("MYSQL_DATABASE"),
+        user=os.getenv("MYSQL_USER"),
+        password=os.getenv("MYSQL_PASSWORD"),
+        port=3306,
+        host=os.getenv("MYSQL_HOST")
+    )
     cursor = conn.cursor()
 
     # Vérifier si l'email existe déjà
@@ -115,12 +123,18 @@ async def register_user(user: UserRegister):
 
     conn.commit()
     cursor.close()
-
     return {"message": "Utilisateur enregistré avec succès"}
 
 # 🔐 Connexion utilisateur
 @app.post("/users/login")
 async def login_user(user: UserLogin):
+    conn = mysql.connector.connect(
+        database=os.getenv("MYSQL_DATABASE"),
+        user=os.getenv("MYSQL_USER"),
+        password=os.getenv("MYSQL_PASSWORD"),
+        port=3306,
+        host=os.getenv("MYSQL_HOST")
+    )
     cursor = conn.cursor()
     cursor.execute("SELECT id, password, isAdmin FROM users WHERE email = %s", (user.email,))
     result = cursor.fetchone()
@@ -136,10 +150,16 @@ async def login_user(user: UserLogin):
 
     return {"message": "Connexion réussie", "user_id": user_id, "is_admin": is_admin}
 
-
-#  Récupération de tous les utilisateurs avec toutes les informations
+# 📋 Récupération de tous les utilisateurs
 @app.get("/users")
 async def get_users():
+    conn = mysql.connector.connect(
+        database=os.getenv("MYSQL_DATABASE"),
+        user=os.getenv("MYSQL_USER"),
+        password=os.getenv("MYSQL_PASSWORD"),
+        port=3306,
+        host=os.getenv("MYSQL_HOST")
+    )
     cursor = conn.cursor()
     cursor.execute("""
         SELECT id, firstName, lastName, email, birthDate, city, postalCode, isAdmin
@@ -163,9 +183,16 @@ async def get_users():
 
     return {"utilisateurs": users}
 
-# Suppresion d'un utilisateur par son ID
+# ❌ Suppression d'un utilisateur
 @app.delete("/users/{user_id}")
 async def delete_user(user_id: int = Path(..., gt=0)):
+    conn = mysql.connector.connect(
+        database=os.getenv("MYSQL_DATABASE"),
+        user=os.getenv("MYSQL_USER"),
+        password=os.getenv("MYSQL_PASSWORD"),
+        port=3306,
+        host=os.getenv("MYSQL_HOST")
+    )
     cursor = conn.cursor()
     cursor.execute("SELECT id FROM users WHERE id = %s", (user_id,))
     if cursor.fetchone() is None:
@@ -177,4 +204,3 @@ async def delete_user(user_id: int = Path(..., gt=0)):
     cursor.close()
 
     return {"message": "Utilisateur supprimé"}
-

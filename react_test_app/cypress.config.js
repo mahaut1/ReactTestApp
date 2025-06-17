@@ -1,4 +1,4 @@
-require('dotenv').config(); // charge .env
+require('dotenv').config(); 
 
 const { defineConfig } = require('cypress');
 
