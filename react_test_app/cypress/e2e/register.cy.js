@@ -1,5 +1,7 @@
 import { faker } from '@faker-js/faker';
 
+let createdEmail = null;
+
 describe('Inscription employé', () => {
   beforeEach(() => {
     cy.clearCookies();
@@ -9,10 +11,12 @@ describe('Inscription employé', () => {
   it("S'inscrit avec succès et est redirigé", () => {
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
-    const uniqueSuffix = Date.now(); 
-    const email = `user_${uniqueSuffix}@example.com`;  
+    const uniqueSuffix = Date.now();
+    const email = `user_${uniqueSuffix}@example.com`;
     const city = faker.location.city();
     const postalCode = faker.location.zipCode('#####');
+
+    createdEmail = email; // <-- 👈 On le garde pour le afterEach
 
     cy.visit('http://localhost:3000/ReactTestApp/register');
 
@@ -28,4 +32,5 @@ describe('Inscription employé', () => {
 
     cy.get('.Toastify__toast', { timeout: 10000 }).should('contain', 'Inscription réussie');
   });
+
 });
