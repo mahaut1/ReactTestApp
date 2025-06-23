@@ -32,7 +32,11 @@
     ],
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "<rootDir>/src/mocks/styleMock.js"
-    }
+    },
+  "coveragePathIgnorePatterns": [
+    "src/index.js",
+    "src/reportWebVitals.js"
+  ]
   },
   "eslintConfig": {
     "extends": [
@@ -63,5 +67,14 @@
     "dotenv": "^16.5.0",
     "gh-pages": "^6.3.0",
     "jsdoc": "^4.0.4"
-  }
+  },
+  "nyc": {
+  "exclude": [
+    "src/index.js",
+    "src/reportWebVitals.js"
+  ]
 }
+
+
+}
+
