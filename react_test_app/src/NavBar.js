@@ -7,6 +7,8 @@ const Navbar = () => {
   const isAdmin = localStorage.getItem('isAdmin') === 'true';
   const userEmail = localStorage.getItem('userEmail');
 
+
+  //deconnexion
   const handleLogout = () => {
     localStorage.removeItem('isAdmin');
     localStorage.removeItem('userEmail');
@@ -14,6 +16,8 @@ const Navbar = () => {
     navigate('/login');
   };
 
+  // Affichage de la barre de navigation
+  // Si l'utilisateur est connecté, on affiche son email et un bouton de déconnexion
   return (
     <nav style={styles.nav}>
       <div>
