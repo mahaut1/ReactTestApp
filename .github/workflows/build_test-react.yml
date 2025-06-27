@@ -106,7 +106,6 @@ jobs:
           echo "CYPRESS_ADMIN_PASSWORD=${{ secrets.CYPRESS_ADMIN_PASSWORD }}" >> react_test_app/.env
 
 
-          
       - name: Install dependencies
         run: |
             cd react_test_app
