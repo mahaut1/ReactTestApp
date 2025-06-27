@@ -2,7 +2,7 @@ name: Build, Test and Deploy React Application - Production
 
 on:
   push:
-    branches: [main]  # Ou branche prod si tu as une branche dédiée
+    branches: [main]
 
 jobs:
   build_test_prod:
@@ -13,34 +13,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+      - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Setup .env.prod file from GitHub Secrets
-        run: |
-          mkdir -p react_test_app
-          echo "MYSQL_HOST_PROD=${{ secrets.MYSQL_HOST_PROD }}" >> react_test_app/.env.prod
-          echo "MYSQL_USER_PROD=${{ secrets.MYSQL_USER_PROD }}" >> react_test_app/.env.prod
-          echo "MYSQL_PASSWORD_PROD=${{ secrets.MYSQL_PASSWORD_PROD }}" >> react_test_app/.env.prod
-          echo "MYSQL_DATABASE_PROD=${{ secrets.MYSQL_DATABASE_PROD }}" >> react_test_app/.env.prod
-          echo "REACT_APP_API_URL_PROD=${{ secrets.REACT_APP_API_URL_PROD }}" >> react_test_app/.env.prod
-          echo "ADMIN_EMAIL_PROD=${{ secrets.ADMIN_EMAIL_PROD }}" >> react_test_app/.env.prod
-          echo "ADMIN_PASSWORD_PROD=${{ secrets.ADMIN_PASSWORD_PROD }}" >> react_test_app/.env.prod
-          echo "CYPRESS_ADMIN_EMAIL_PROD=${{ secrets.CYPRESS_ADMIN_EMAIL_PROD }}" >> react_test_app/.env.prod
-          echo "CYPRESS_ADMIN_PASSWORD_PROD=${{ secrets.CYPRESS_ADMIN_PASSWORD_PROD }}" >> react_test_app/.env.prod
-
-      - name: npm ci and test
+      - name: Install and Build
         run: |
           cd react_test_app
           npm ci
-          # Charger les variables prod avant le build (exemple bash)
-          set -a
-          source .env.prod
-          set +a
           npm run jsdoc
-          npm run build --if-present
+          REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL_PROD }} npm run build
           npm test
 
       - name: Upload coverage reports to Codecov
@@ -48,10 +30,6 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./react_test_app/coverage/clover.xml
-
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v3
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -61,18 +39,18 @@ jobs:
       - name: Authenticate with npm
         run: echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > ~/.npmrc
 
-      - name: Check version
+      - name: Check version and publish if new
         run: |
           cd react_test_app
           LOCAL_VERSION=$(node -p "require('./package.json').version")
-          NPM_VERSION=$(npm show @mahautw/react_test_app version)
+          NPM_VERSION=$(npm show @mahautw/react_test_app version || echo "0.0.0")
           if [ "$LOCAL_VERSION" != "$NPM_VERSION" ]; then
             echo "NEW_VERSION=true" >> $GITHUB_ENV
           else
             echo "NEW_VERSION=false" >> $GITHUB_ENV
           fi
 
-      - name: Build and publish package on NPM
+      - name: Publish to NPM
         if: env.NEW_VERSION == 'true'
         run: |
           cd react_test_app
@@ -84,14 +62,14 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   deploy_prod:
+    needs: build_test_prod
+    runs-on: ubuntu-latest
     environment:
       name: production
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+      url: https://mahautw.github.io/react_test_app/
     permissions:
       pages: write
       id-token: write
-    needs: build_test_prod
     steps:
       - name: Deploy to Github Pages
         id: deployment
