@@ -102,7 +102,7 @@ jobs:
           mkdir -p react_test_app
           echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> react_test_app/.env
           echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> react_test_app/.env
-          echo "REACT_APP_API_URL=${{secrets.REACT_APP_API_URL}} >> react_test_app/.env
+          echo "REACT_APP_API_URL=${{secrets.REACT_APP_API_URL}}" >> react_test_app/.env
           echo "ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}" >> react_test_app/.env
           echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> react_test_app/.env
           echo "CYPRESS_ADMIN_EMAIL=${{ secrets.CYPRESS_ADMIN_EMAIL }}" >> react_test_app/.env
