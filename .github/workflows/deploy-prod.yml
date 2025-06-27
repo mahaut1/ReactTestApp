@@ -29,7 +29,7 @@ jobs:
 
       - name: Inject env vars into .env.production
         run: |
-          echo "REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL_PROD }}" > react_test_app/.env.production
+          echo "REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}" > react_test_app/.env.production
 
       - name: Run tests
         run: |
