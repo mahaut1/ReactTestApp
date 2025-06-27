@@ -20,7 +20,8 @@ const LoginPage = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
+console.log('Response:', response); // Debugging line
+console.log('REACT_APP_API_URL:', process.env.REACT_APP_API_URL); // Debugging line
       const data = await response.json();
 
       if (!response.ok) {

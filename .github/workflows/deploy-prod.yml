@@ -17,13 +17,31 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install and Build
+      - name: Install dependencies
         run: |
           cd react_test_app
           npm ci
+
+      - name: Generate documentation
+        run: |
+          cd react_test_app
           npm run jsdoc
-          REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL_PROD }} npm run build
+
+      - name: Inject env vars into .env.production
+        run: |
+          echo "REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL_PROD }}" > react_test_app/.env.production
+
+      - name: Run tests
+        run: |
+          cd react_test_app
           npm test
+
+      - name: Build React app
+        run: |
+          cd react_test_app
+          npm run build
+        env:
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL_PROD }}
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
@@ -31,7 +49,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./react_test_app/coverage/clover.xml
 
-      - name: Upload artifact
+      - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
           path: react_test_app/build
@@ -72,5 +90,4 @@ jobs:
       id-token: write
     steps:
       - name: Deploy to Github Pages
-        id: deployment
         uses: actions/deploy-pages@v4
