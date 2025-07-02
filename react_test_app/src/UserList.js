@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingUserId, setDeletingUserId] = useState(null);
+  const navigate = useNavigate();
 
   const fetchUsers = () => {
     setLoading(true);
@@ -44,11 +46,19 @@ const UserList = () => {
     }
   };
 
+  const handleAddBook = () => {
+    navigate('/add-book');
+  };
+
   if (loading) return <p>Chargement...</p>;
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Liste des utilisateurs</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Liste des utilisateurs</h1>
+       
+      </div>
+    
       <table className="w-full border-collapse border border-gray-300">
         <thead>
           <tr className="bg-gray-200">
@@ -97,7 +107,18 @@ const UserList = () => {
           )}
         </tbody>
       </table>
-    </div>
+
+<hr />
+
+
+  <button
+        onClick={handleAddBook}
+         
+      >
+        formulaire d'ajout de livre
+      </button>
+  
+     </div>
   );
 };
 

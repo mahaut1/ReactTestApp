@@ -7,6 +7,7 @@ import AdminPage from './AdminPage';
 import RequireAdmin from './RequireAdmin';
 import HomePage from './HomePage';
 import Navbar from './NavBar';
+import RegistrationBook from './RegisterBook';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<RegistrationForm />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path ="/add-book" element={<RegistrationBook/>} />
         <Route
           path="/admin"
           element={
