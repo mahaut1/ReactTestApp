@@ -1,4 +1,4 @@
-import { validateName, validateEmail, validateAge, validatePostalCode } from './validation';
+import { validateName, validateEmail, validateAge, validatePostalCode } from '../validation';
 
 describe('Validation Functions', () => {
     test('validateName returns true for valid names', () => {

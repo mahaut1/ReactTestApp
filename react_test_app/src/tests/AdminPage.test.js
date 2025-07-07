@@ -1,15 +1,14 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import AdminPage from './AdminPage'; 
+import AdminPage from '../AdminPage'; 
 import axios from 'axios';
-import UserList from './UserList';
 import '@testing-library/jest-dom';
 
 // Mock d'Axios
 jest.mock('axios');
 
 // Mock du composant enfant UserList
-jest.mock('./UserList', () => () => <div data-testid="user-list">UserList</div>);
+jest.mock('../UserList', () => () => <div data-testid="user-list">UserList</div>);
 
 describe('AdminPage', () => {
   const mockUsers = {

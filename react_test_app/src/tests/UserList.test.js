@@ -1,7 +1,17 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import UserList from './UserList';
+import { MemoryRouter } from 'react-router-dom';
+import UserList from '../UserList';
 import userEvent from '@testing-library/user-event';
+
+// Helper function to render UserList with Router context
+const renderWithRouter = (ui) => {
+  return render(
+    <MemoryRouter>
+      {ui}
+    </MemoryRouter>
+  );
+};
 
 
 // Mock global fetch
@@ -43,21 +53,21 @@ describe('UserList', () => {
       json: async () => mockUsers
     });
 
-    render(<UserList />);
+    renderWithRouter(<UserList />);
 
     expect(screen.getByText(/chargement/i)).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.getByText('Jean')).toBeInTheDocument();
-      expect(screen.getByText('Curie')).toBeInTheDocument();
     });
+    expect(screen.getByText('Curie')).toBeInTheDocument();
   });
 
   it('affiche une erreur si le fetch échoue', async () => {
     console.error = jest.fn(); // éviter affichage console dans les tests
     fetch.mockRejectedValueOnce(new Error('Erreur API'));
 
-    render(<UserList />);
+    renderWithRouter(<UserList />);
 
     expect(screen.getByText(/chargement/i)).toBeInTheDocument();
 
@@ -82,17 +92,17 @@ describe('UserList', () => {
     // Mock window.confirm
     window.confirm = jest.fn().mockReturnValue(true);
 
-    render(<UserList />);
+    renderWithRouter(<UserList />);
 
-    await waitFor(() => screen.getByText('Jean'));
+    await screen.findByText('Jean');
 
     const deleteButtons = screen.getAllByText(/supprimer/i);
     fireEvent.click(deleteButtons[0]); // supprime "Jean Dupont"
 
     await waitFor(() => {
       expect(screen.queryByText('Jean')).not.toBeInTheDocument();
-      expect(window.confirm).toHaveBeenCalled();
     });
+    expect(window.confirm).toHaveBeenCalled();
   });
 
   it('ne supprime pas si annulation de la confirmation', async () => {
@@ -103,9 +113,9 @@ describe('UserList', () => {
 
     window.confirm = jest.fn().mockReturnValue(false);
 
-    render(<UserList />);
+    renderWithRouter(<UserList />);
 
-    await waitFor(() => screen.getByText('Jean'));
+    await screen.findByText('Jean');
 
     const deleteButtons = screen.getAllByText(/supprimer/i);
     fireEvent.click(deleteButtons[0]);
@@ -136,7 +146,7 @@ test('affiche une alerte si la suppression échoue', async () => {
     })
   );
 
-  render(<UserList />);
+  renderWithRouter(<UserList />);
 
   // Attendre que le nom de l'utilisateur s'affiche
   await screen.findByText('Jean');

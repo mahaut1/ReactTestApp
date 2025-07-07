@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import RegistrationForm from './RegistrationForm';
+import RegistrationForm from '../RegistrationForm';
 import axios from 'axios';
 import { ToastContainer } from 'react-toastify';
 
@@ -153,7 +153,7 @@ describe('Validation utility functions', () => {
     validateEmail,
     validateAge,
     validatePostalCode
-  } = require('./validation');
+  } = require('../validation');
 
   test('validateName valide correctement les noms valides', () => {
     expect(validateName('Jean')).toBe(true);

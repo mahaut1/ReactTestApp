@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import RegistrationForm from './RegistrationForm';
+import RegistrationForm from '../RegistrationForm';
 
 test('renders the registration form', () => {
     render(<RegistrationForm />);
@@ -10,8 +10,8 @@ test('displays error for invalid email', async () => {
   render(<RegistrationForm />);
   fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'invalidEmail' } });
   fireEvent.click(screen.getByText("S'enregistrer"));
-   waitFor(() => expect(screen.getByText(/Email invalide/i)).toBeInTheDocument());
-  });
+  expect(await screen.findByText(/Email invalide/i)).toBeInTheDocument();
+});
 
 test('displays error for invalid name', async () => {
   render(<RegistrationForm />); 

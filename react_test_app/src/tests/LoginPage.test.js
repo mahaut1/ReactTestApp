@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import LoginPage from './LoginFile';
+import LoginPage from '../LoginFile';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 
@@ -72,10 +72,11 @@ describe('LoginPage', () => {
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(`${apiUrl}/users/login`, expect.anything());
-      expect(localStorage.getItem('userId')).toBe('1');
-      expect(localStorage.getItem('isAdmin')).toBe('true');
-      expect(mockedNavigate).toHaveBeenCalledWith('/admin');
     });
+    
+    expect(localStorage.getItem('userId')).toBe('1');
+    expect(localStorage.getItem('isAdmin')).toBe('true');
+    expect(mockedNavigate).toHaveBeenCalledWith('/admin');
   });
 
   it('redirige vers / pour un utilisateur non admin', async () => {
