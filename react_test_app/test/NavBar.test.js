@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import Navbar from './NavBar';
+import Navbar from '../src/NavBar';
 import { BrowserRouter } from 'react-router-dom';
 
 // Mock du useNavigate

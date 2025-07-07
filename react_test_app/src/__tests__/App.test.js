@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import RegistrationForm from './RegistrationForm';
+import RegistrationForm from '../RegistrationForm';
 
 test('renders the registration form', () => {
     render(<RegistrationForm />);

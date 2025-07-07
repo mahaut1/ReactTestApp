@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import RegistrationForm from './RegistrationForm';
+import RegistrationForm from '../src/RegistrationForm';
 import axios from 'axios';
 import { ToastContainer } from 'react-toastify';
 

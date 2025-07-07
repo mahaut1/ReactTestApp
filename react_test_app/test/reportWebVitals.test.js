@@ -1,4 +1,4 @@
-import reportWebVitals from './reportWebVitals';
+import reportWebVitals from '../src/reportWebVitals';
 
 // Création de mocks pour les métriques web-vitals
 const mockGetCLS = jest.fn();

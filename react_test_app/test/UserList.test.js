@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import UserList from './UserList';
+import UserList from '../src/UserList';
 import userEvent from '@testing-library/user-event';
 
 

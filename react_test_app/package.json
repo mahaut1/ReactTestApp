@@ -33,10 +33,10 @@
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "<rootDir>/src/mocks/styleMock.js"
     },
-  "coveragePathIgnorePatterns": [
-    "src/index.js",
-    "src/reportWebVitals.js"
-  ]
+    "coveragePathIgnorePatterns": [
+      "src/index.js",
+      "src/reportWebVitals.js"
+    ]
   },
   "eslintConfig": {
     "extends": [

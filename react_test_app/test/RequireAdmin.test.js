@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import RequireAdmin from './RequireAdmin';
+import RequireAdmin from '../src/RequireAdmin';
 
 // Mock de Navigate de react-router-dom
 jest.mock('react-router-dom', () => {
