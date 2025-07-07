@@ -10,8 +10,8 @@ test('displays error for invalid email', async () => {
   render(<RegistrationForm />);
   fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'invalidEmail' } });
   fireEvent.click(screen.getByText("S'enregistrer"));
-   waitFor(() => expect(screen.getByText(/Email invalide/i)).toBeInTheDocument());
-  });
+  expect(await screen.findByText(/Email invalide/i)).toBeInTheDocument();
+});
 
 test('displays error for invalid name', async () => {
   render(<RegistrationForm />); 

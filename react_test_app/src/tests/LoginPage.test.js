@@ -72,10 +72,11 @@ describe('LoginPage', () => {
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(`${apiUrl}/users/login`, expect.anything());
-      expect(localStorage.getItem('userId')).toBe('1');
-      expect(localStorage.getItem('isAdmin')).toBe('true');
-      expect(mockedNavigate).toHaveBeenCalledWith('/admin');
     });
+    
+    expect(localStorage.getItem('userId')).toBe('1');
+    expect(localStorage.getItem('isAdmin')).toBe('true');
+    expect(mockedNavigate).toHaveBeenCalledWith('/admin');
   });
 
   it('redirige vers / pour un utilisateur non admin', async () => {

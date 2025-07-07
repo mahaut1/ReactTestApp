@@ -2,7 +2,6 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import AdminPage from '../AdminPage'; 
 import axios from 'axios';
-import UserList from '../UserList';
 import '@testing-library/jest-dom';
 
 // Mock d'Axios
