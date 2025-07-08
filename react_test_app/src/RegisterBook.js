@@ -100,7 +100,7 @@ const handleSubmit = async (e) => {
           onChange={handleChange}
           data-cy="input-title"
         />
-        {errors.title && <span className="error" data-cy="error-title">{errors.title}</span>}
+        {errors.title && <span id='error-title' className="error" data-cy="error-title">{errors.title}</span>}
 
         <input
           type="text"
@@ -110,7 +110,7 @@ const handleSubmit = async (e) => {
           onChange={handleChange}
           data-cy="input-author"
         />
-        {errors.author && <span className="error" data-cy="error-author">{errors.author}</span>}
+        {errors.author && <span id='error-author' className="error" data-cy="error-author">{errors.author}</span>}
 
         <input
           type="number"
@@ -122,7 +122,7 @@ const handleSubmit = async (e) => {
           min="0"
           max={new Date().getFullYear()}
         />
-        {errors.year && <span className="error" data-cy="error-year">{errors.year}</span>}
+        {errors.year && <span id='error-year' className="error" data-cy="error-year">{errors.year}</span>}
 
         <button type="submit" disabled={!isFormValid()}>
           Ajouter le livre
