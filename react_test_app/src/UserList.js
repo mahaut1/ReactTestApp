@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BookList from './BookList';
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
@@ -117,6 +118,8 @@ const UserList = () => {
       >
         formulaire d'ajout de livre
       </button>
+
+      <BookList />
   
      </div>
   );
