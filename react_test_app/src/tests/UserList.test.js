@@ -2,7 +2,13 @@ import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import UserList from '../UserList';
-import userEvent from '@testing-library/user-event';
+
+// Mock BookList component since it makes its own fetch calls
+jest.mock('../BookList', () => {
+  return function MockBookList() {
+    return <div data-testid="book-list">Mocked BookList</div>;
+  };
+});
 
 // Helper function to render UserList with Router context
 const renderWithRouter = (ui) => {
@@ -13,9 +19,11 @@ const renderWithRouter = (ui) => {
   );
 };
 
-
 // Mock global fetch
 global.fetch = jest.fn();
+
+// Mock environment variable
+const originalEnv = process.env;
 
 describe('UserList', () => {
   const mockUsers = {
@@ -45,6 +53,15 @@ describe('UserList', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Mock the environment variable
+    process.env = {
+      ...originalEnv,
+      REACT_APP_API_URL: 'http://localhost:3001'
+    };
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
   });
 
   it('affiche le message de chargement puis la liste des utilisateurs', async () => {
@@ -86,15 +103,15 @@ describe('UserList', () => {
       json: async () => mockUsers
     });
 
-    // Mock delete fetch
-    fetch.mockResolvedValueOnce({ ok: true });
-
     // Mock window.confirm
     window.confirm = jest.fn().mockReturnValue(true);
 
     renderWithRouter(<UserList />);
 
     await screen.findByText('Jean');
+
+    // Mock delete fetch after the component is rendered
+    fetch.mockResolvedValueOnce({ ok: true });
 
     const deleteButtons = screen.getAllByText(/supprimer/i);
     fireEvent.click(deleteButtons[0]); // supprime "Jean Dupont"
@@ -106,6 +123,7 @@ describe('UserList', () => {
   });
 
   it('ne supprime pas si annulation de la confirmation', async () => {
+    // Mock fetch initial (GET)
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => mockUsers
@@ -120,42 +138,61 @@ describe('UserList', () => {
     const deleteButtons = screen.getAllByText(/supprimer/i);
     fireEvent.click(deleteButtons[0]);
 
+    // Wait a bit to ensure no deletion happens
+    await new Promise(resolve => setTimeout(resolve, 100));
+
     expect(screen.getByText('Jean')).toBeInTheDocument();
     expect(window.confirm).toHaveBeenCalled();
+    // Verify no DELETE request was made
+    expect(fetch).toHaveBeenCalledTimes(1); // Only the initial GET request
   });
 });
 
 test('affiche une alerte si la suppression échoue', async () => {
+  // Mock environment variable
+  process.env.REACT_APP_API_URL = 'http://localhost:3001';
+  
   // Mock window.confirm pour accepter la suppression
   jest.spyOn(window, 'confirm').mockReturnValue(true);
   // Mock window.alert pour vérifier l'alerte
   const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
 
   // Mock fetch pour GET users (retour valide)
-  fetch.mockImplementationOnce(() =>
-    Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve({ utilisateurs: [{ id: 1, firstName: 'Jean', lastName: 'Dupont', email: 'jean@example.com', birthDate: '1990-01-01', city: 'Paris', postalCode: '75000', isAdmin: false }] }),
-    })
-  );
-
-  // Mock fetch pour DELETE user (retour KO)
-  fetch.mockImplementationOnce(() =>
-    Promise.resolve({
-      ok: false,
-    })
-  );
+  fetch.mockResolvedValueOnce({
+    ok: true,
+    json: () => Promise.resolve({ 
+      utilisateurs: [{ 
+        id: 1, 
+        firstName: 'Jean', 
+        lastName: 'Dupont', 
+        email: 'jean@example.com', 
+        birthDate: '1990-01-01', 
+        city: 'Paris', 
+        postalCode: '75000', 
+        isAdmin: false 
+      }] 
+    }),
+  });
 
   renderWithRouter(<UserList />);
 
   // Attendre que le nom de l'utilisateur s'affiche
   await screen.findByText('Jean');
 
+  // Mock fetch pour DELETE user (retour KO) après le rendu
+  fetch.mockResolvedValueOnce({
+    ok: false,
+  });
+
   // Cliquer sur le bouton supprimer
-  userEvent.click(screen.getByRole('button', { name: /supprimer/i }));
+  const deleteButton = screen.getByRole('button', { name: /supprimer/i });
+  fireEvent.click(deleteButton);
 
   // Attendre que l'alerte soit appelée
   await waitFor(() => {
     expect(alertSpy).toHaveBeenCalledWith('La suppression a échoué.');
   });
-})
+
+  // Cleanup
+  alertSpy.mockRestore();
+});

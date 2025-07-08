@@ -22,6 +22,9 @@ describe('Validation Functions', () => {
         expect(validateEmail('invalidEmail')).toBe(false);
         expect(validateEmail('test@.com')).toBe(false);
         expect(validateEmail('test@com')).toBe(false);
+        expect(validateEmail('jean.dupont@invalid')).toBe(false);
+        expect(validateEmail('jean.dupontexample.com')).toBe(false);
+        expect(validateEmail('')).toBe(false);
     });
 
     test('validateAge returns true for 18+ users', () => {
@@ -41,17 +44,11 @@ describe('Validation Functions', () => {
         expect(validatePostalCode('123')).toBe(false); // Trop court
         expect(validatePostalCode('abcde')).toBe(false); // Contient des lettres
         expect(validatePostalCode('750012')).toBe(false); // Trop long
+        expect(validatePostalCode('')).toBe(false); // Vide
     });
-});
 
-test("rejects invalid emails", () => {
-    expect(validateEmail("jean.dupont@invalid")).toBe(false);
-    expect(validateEmail("jean.dupont@.com")).toBe(false);
-    expect(validateEmail("jean.dupontexample.com")).toBe(false);
-    expect(validateEmail("")).toBe(false);
-  });
-  
-  test('validateAge returns false for users just under 18', () => {
-    expect(validateAge('2020-04-01')).toBe(false); // Devrait retourner false car l'utilisateur n'a pas encore 18 ans
+    test('validateAge returns false for users just under 18', () => {
+        expect(validateAge('2020-04-01')).toBe(false); // Devrait retourner false car l'utilisateur n'a pas encore 18 ans
+    });
 });
 
